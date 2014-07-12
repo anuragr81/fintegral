@@ -101,6 +101,38 @@ key "OrdBLiqImbalanceWeeYongYeo"
 .
 \end_layout
 
+\begin_layout Subsection
+Close to Maturity
+\end_layout
+
+\begin_layout Standard
+When we're close to maturity, the by no-aribtrage (which assumes lack of
+ liquidity constraints), the call-option price would be 
+\begin_inset Formula $S_{T}-K$
+\end_inset
+
+.
+ Our hedged portfolio moves as
+\begin_inset Formula $\Pi_{T}=\alpha B_{T}+\Delta\cdot S_{T}$
+\end_inset
+
+.
+ As value of the two should be the same 
+\begin_inset Formula $\Delta$
+\end_inset
+
+ should approach to unity.
+ If the option is just at the money, then 
+\begin_inset Formula $S_{T}=K$
+\end_inset
+
+ and the price of the option should be close to zero, thus 
+\begin_inset Formula $\Delta=\frac{{\alpha B_{T}}}{S_{T}}$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Section
 Current Project
 \end_layout
