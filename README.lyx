@@ -59,6 +59,10 @@
 
 \begin_body
 
+\begin_layout Section
+Order Book Liquidity
+\end_layout
+
 \begin_layout Standard
 There are mainly two groups of liquidity providers in the market, namely
  the market makers and the limit order traders
@@ -95,6 +99,31 @@ key "OrdBLiqImbalanceWeeYongYeo"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Section
+Current Project
+\end_layout
+
+\begin_layout Standard
+The current activities analyze effect of liquity when an underlying is traded.
+ First, the behaviour of delta is explored with the hedging portfolio.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+d\Pi & = & \alpha dB+\Delta dS
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Equating above with Ito's Lemma gives us Black-Scholes equation.
+ This has been valued empirically using a simulated approach as well.
 \end_layout
 
 \begin_layout Standard
