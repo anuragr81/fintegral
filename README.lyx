@@ -111,26 +111,24 @@ When we're close to maturity, the by no-aribtrage (which assumes lack of
 \begin_inset Formula $S_{T}-K$
 \end_inset
 
-.
- Our hedged portfolio moves as
+ whenever option is in the money.
+ For an in-the-money option, our hedged portfolio moves as
 \begin_inset Formula $\Pi_{T}=\alpha B_{T}+\Delta\cdot S_{T}$
 \end_inset
 
 .
- As value of the two should be the same 
+ The value of the two should be the same and 
 \begin_inset Formula $\Delta$
 \end_inset
 
- should approach to unity.
- If the option is just at the money, then 
-\begin_inset Formula $S_{T}=K$
+ should thus approach unity.
+ If the option is out of money, then 
+\begin_inset Formula $S_{T}>K$
 \end_inset
 
- and the price of the option should be close to zero, thus 
-\begin_inset Formula $\Delta=\frac{{\alpha B_{T}}}{S_{T}}$
-\end_inset
-
-.
+ and the price of the option should be zero (no position in stock necessary
+ as the out-of-the-money option is worthless around maturity when stock-price
+ remains constant).
 \end_layout
 
 \begin_layout Section
