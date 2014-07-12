@@ -19,7 +19,7 @@ test <- function(K) {
 }
 
 bscallprice <- function(S_0,K,r_f,vol,t,T){
-    numerator=log(S_0/K) + (r_f+(vol^2)*0.5)*(T-t);
+    numerator=log(S_0/K) + (r_f+(vol*vol)*0.5)*(T-t);
     denominator=vol*sqrt(T-t);
     d1=(numerator/denominator);
     d2=d1-vol*sqrt(T-t);
@@ -30,7 +30,7 @@ bscallprice <- function(S_0,K,r_f,vol,t,T){
     return (data.frame(price=price,delta=delta,gamma=gamma));
 }
 
-generate_path <- function (S_0,mu,vol,dt,T) {
+generate_path <- function (S_0,r_f,vol,dt,T) {
     if (dt==0) {
         print ("Error in input: dt");
     }
@@ -42,7 +42,7 @@ generate_path <- function (S_0,mu,vol,dt,T) {
     tarray[1]=t;
     t=t+dt;
     for ( i in seq(2,n)){
-        dS = values[i-1]*(mu*dt+vol*rnorm(1)*sqrt(dt));
+        dS = values[i-1]*((r_f-vol*vol/2)*dt+vol*rnorm(1)*sqrt(dt));
         values[i]=values[i-1]+dS;
         tarray[i]=t;
         t=t+dt;
@@ -62,7 +62,7 @@ num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
 }
 
 show_deltas <- function(path,bs,hedged_pos) {
-    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition" , xlim=c(0,max(path$t)),ylim=c(-max(2*hedged_pos),max(2*hedged_pos)));
+    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition", xlim=c(0,max(path$t)),ylim=c(-max(2*hedged_pos),max(2*hedged_pos)));
     cl<-rainbow(2);
     lines(path$t,bs$delta,col=cl[1],lty=1)
     lines(path$t,hedged_pos,col=cl[2],lty=2);
@@ -79,8 +79,8 @@ show_stock_opt <- function(path,option_prices,hedged_pos) {
     legend(1,-20,c("option","stock","hedged pos"),col=cl, lty=c(1,2,3));
 }
 
-hedged_position <- function (S_0,mu,vol,dt,T,K,r_f) {
-    path = generate_path(S_0,mu,vol,dt,T);
+hedged_position <- function (S_0,r_f,vol,dt,T,K) {
+    path = generate_path(S_0,r_f,vol,dt,T);
     nh = length(path$values);
     option_prices=array();
     hedged_pos=array();
@@ -103,7 +103,6 @@ hedged_position <- function (S_0,mu,vol,dt,T,K,r_f) {
 
 simul <- function(){
     S_0=50;
-    mu=.2;
     vol=.9;
     dt=.01;
     T=2;
@@ -111,10 +110,10 @@ simul <- function(){
     r_f=.05;
     out=array();
  
-    return(hedged_position(S_0,mu,vol,dt,T,K,r_f));
+    return(hedged_position(S_0,r_f,vol,dt,T,K));
    
     for ( k in seq(500)){
-        out[k]=sd(hedged_position(S_0,mu,vol,dt,T,K,r_f));
+        out[k]=sd(hedged_position(S_0,r_f,vol,dt,T,K));
     }
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
     #cat(out);
@@ -123,4 +122,32 @@ simul <- function(){
     hist(out); return(sd(out));
 }
 
- 
+testBS <- function(){
+# observations: 
+# in the money option-deltas come close to unity as time to maturity approaches (and stock-price remains same). This is because the payoff from stock is the same as the option (weight unity in the tracking portfolio).
+# out of the money option-deltas come close to zero as time to maturity approaches (and stock-price remains constant). This is because owning a stock (delta) pays nothing. 
+
+S_0=100
+r_f=.1
+vol=.5
+dt=.01
+T=3
+K=120
+path = generate_path(S_0,r_f,vol,dt,T);
+#ts.plot(ts(path$values))
+nh=T/dt
+#bs = bscallprice(S_0=path$values,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
+start=0
+end=2
+df=(end-start)/nh
+volvec=seq(start,end-df,df)
+bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
+print(bs$delta)
+#ts.plot(ts(bs$price),ts(path$values))
+plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
+cl<-rainbow(2);
+lines(path$t,bs$delta,col=cl[1],lty=1)
+lines(path$t,bs$price/K,col=cl[2],lty=2);
+legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
+
+}
