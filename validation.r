@@ -30,24 +30,16 @@ bscallprice <- function(S_0,K,r_f,vol,t,T){
     return (data.frame(price=price,delta=delta,gamma=gamma));
 }
 
-generate_path <- function (S_0,r_f,vol,dt,T) {
-    if (dt==0) {
-        print ("Error in input: dt");
-    }
-    n=T/dt;
-    t=0;
-    tarray=array();
-    values=array();
-    values[1]=S_0;
-    tarray[1]=t;
-    t=t+dt;
-    for ( i in seq(2,n)){
-        dS = values[i-1]*((r_f-vol*vol/2)*dt+vol*rnorm(1)*sqrt(dt));
-        values[i]=values[i-1]+dS;
-        tarray[i]=t;
-        t=t+dt;
-    }
-    return (data.frame(values=values,t=tarray));
+generate_path <- function (S_0,r_f,vol,dt,T){
+
+t=0
+n=T/dt;
+z=rnorm(n);
+vec=exp((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
+vec[1]=S_0
+values=cumprod(vec)
+tarray=seq(0,n-1)*dt
+return (data.frame(values=values,t=tarray));
 }
 
 num_stocks_to_short <- function(underlying_price,delta,nxtdelta,gamma,dgamma,nShortedStocks,dS){
@@ -122,6 +114,9 @@ simul <- function(){
     hist(out); return(sd(out));
 }
 
+
+
+
 testBS <- function(){
 # observations: 
 # in the money option-deltas come close to unity as time to maturity approaches (and stock-price remains same). This is because the payoff from stock is the same as the option (weight unity in the tracking portfolio).
@@ -134,7 +129,6 @@ dt=.01
 T=3
 K=120
 path = generate_path(S_0,r_f,vol,dt,T);
-#ts.plot(ts(path$values))
 nh=T/dt
 #bs = bscallprice(S_0=path$values,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
 start=0
@@ -142,7 +136,7 @@ end=2
 df=(end-start)/nh
 volvec=seq(start,end-df,df)
 bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
-print(bs$delta)
+#print(bs$delta)
 #ts.plot(ts(bs$price),ts(path$values))
 plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
 cl<-rainbow(2);
