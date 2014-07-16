@@ -31,16 +31,49 @@ bscallprice <- function(S_0,K,r_f,vol,t,T){
 }
 
 generate_path <- function (S_0,r_f,vol,dt,T){
-
-t=0
-n=T/dt;
-z=rnorm(n);
-vec=exp((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
-vec[1]=S_0
-values=cumprod(vec)
-tarray=seq(0,n-1)*dt
-return (data.frame(values=values,t=tarray));
+    t=0
+    n=T/dt;
+    z=rnorm(n);
+    vec=exp((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
+    vec[1]=S_0
+    values=cumprod(vec)
+    tarray=seq(0,n-1)*dt
+    return (data.frame(values=values,t=tarray));
 }
+
+#========== BARRIER PRICER ============
+
+value_upandin_func <- function(S,K,B){
+# if S shoots up above B payoff is S_T-K
+		if (max(S)>B){
+                return(max(S[length(S)]-K,0))
+			}else{
+				return(0)
+			}
+}
+
+
+value_upandin <- function (npaths,S_0,K,B,r_f,vol,dt,T) {
+
+res=array(0);
+out=array(0);
+
+for ( i in seq(npaths)) {
+                paths=generate_path(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T)
+		out[i]=value_upandin_func(S=paths$values,K=K,B=B);
+}
+
+res=(sum(out)/length(out))*exp(-r_f*T);
+sg_c=sd(out);
+
+values_left=res-1.96*sg_c/sqrt(npaths);
+values_right=res+1.96*sg_c/sqrt(npaths);
+
+return (data.frame(left=values_left,right=values_right));
+
+}
+
+#==========
 
 num_stocks_to_short <- function(underlying_price,delta,nxtdelta,gamma,dgamma,nShortedStocks,dS){
 #    return ((1/underlying_price)*((delta-nShortedStocks)*dS+gamma*(dS^2)/2+dgamma*(dS^3)/6));
@@ -83,12 +116,10 @@ hedged_position <- function (S_0,r_f,vol,dt,T,K) {
     for ( i in seq (2,nh) ) {
            dS= path$values[i] - path$values[i-1];
            nShort=num_stocks_to_short(underlying_price=path$values[i],delta=bs$delta[i-1],nxtdelta=bs$delta[i],gamma=bs$gamma[i-1],nShortedStocks=nShortedStocks,dS=dS);
-           #nShort=num_stocks_to_short_direct(underlying_price=path$values[i],dP=(bs$price[i]-bs$price[i-1]),nShortedStocks=nShortedStocks,dS=dS)
            nShortedStocks = nShortedStocks + nShort;
            hedged_pos[i] =  -nShortedStocks*(path$values[i]) + bs$price[i];
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
-#    show_stock_opt(path=path,option_prices=bs$price,hedged_pos=hedged_pos);
     show_deltas(path,bs,hedged_pos)
     return(hedged_pos);
 }
