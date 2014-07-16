@@ -101,6 +101,59 @@ key "OrdBLiqImbalanceWeeYongYeo"
 .
 \end_layout
 
+\begin_layout Standard
+Market participants monitor trading activity, and accordingly revise their
+ expectations of future price and liquidity levels.
+ For institutional investors trading in large volumes, the effect of order
+ size on security price and market depth is of significant importance.
+ If there is too much volume available at or close to the best price, an
+ order with limit price further away from the best price may never get filled.
+ Similarly, if the market impact is wider, with thin volumes at the best
+ price (or close to it), there is then an increased probability of price-improvi
+ng order being filled.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IntradayOrderBookPatterms"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If the probability that the information is long lived is high, then informed
+ traders are more likely to place limit orders than market orders
+\begin_inset CommandInset citation
+LatexCommand cite
+key "InformedTraders"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The open-to-close average price change for buys is only 0.34% .
+ The behavior of prices from the open to the trade can be attributable to
+ short-run liquidity costs, prior release of information, or positive-feedback
+ trading by managers.
+ The post-trade behavior of prices exhibits a sharp difference between buys
+ and sells.
+ The price continues to rise after purchases - the principal-weighted average
+ return from the trade to the closing price is 0.12% whereas it tends to
+ correct itself after sales - the reversal is 0.10%.The post-trade reversal
+ for sells is consistent with the existence of short-run liquidity costs,
+ whereas the post-purchase behavior of prices for buys is consistent with
+ information effects or imperfectly elastic demand curves
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IntradayStockPrices"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsection
 Close to Maturity
 \end_layout
@@ -133,6 +186,16 @@ When we're close to maturity, the by no-aribtrage (which assumes lack of
 
 \begin_layout Section
 Current Project
+\end_layout
+
+\begin_layout Standard
+Transactions - vs - liquidity.
+ Trading a lot of underlying rather than the free-float.
+ The more shares you trade, the less favorable conditions would be (hedging
+ function).
+ If one hedges such position (daily-rebalancing) one realizes the riskiness
+ of the position.
+ Calculate VaR as well.
 \end_layout
 
 \begin_layout Standard
