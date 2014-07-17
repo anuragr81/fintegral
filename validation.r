@@ -146,6 +146,21 @@ simul <- function(){
 }
 
 
+value_downandout_exp <- function(S_0,K,B,r_f,vol,dt,T) {
+nh=T/dt
+t=seq(0:(nh-1))*dt
+path = generate_path(S_0,r_f,vol,dt,T);
+S_t=path$values
+cbs=bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+cbsi=bscallprice(S_0=(B*B/S_t),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+n1=cbs$price
+n2=((S_t/rep(B,nh))^(1-(2*r_f/(vol*vol)))*cbsi$price)
+ts.plot(ts(n1-n2),ts(cbs$price))
+return(data.frame(T_t=T-t,S_t=S_t,price=n1-n2))
+#ts.plot(S_t,ts((S_t[1]^2)/S_t)) # <-- beauty
+
+}
+
 
 
 testBS <- function(){

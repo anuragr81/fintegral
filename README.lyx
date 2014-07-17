@@ -188,12 +188,66 @@ When we're close to maturity, the by no-aribtrage (which assumes lack of
 Current Project
 \end_layout
 
+\begin_layout Subsection
+Transaction Costs vs Liquidity
+\end_layout
+
 \begin_layout Standard
-Transactions - vs - liquidity.
- Trading a lot of underlying rather than the free-float.
- The more shares you trade, the less favorable conditions would be (hedging
- function).
- If one hedges such position (daily-rebalancing) one realizes the riskiness
+Setting high transaction costs would discourage trading which may provide
+ liquidity.
+ Let's say we have 
+\begin_inset Formula $N=1e+6$
+\end_inset
+
+ number of shares of a company in the market.
+ Let the Market-capitalization of the company be 
+\begin_inset Formula $X=10e+6$
+\end_inset
+
+ (Share price=
+\begin_inset Formula $10$
+\end_inset
+
+).
+ Now, buying 
+\begin_inset Formula $b=200K$
+\end_inset
+
+ of its shares (
+\begin_inset Formula $b<N$
+\end_inset
+
+ at price
+\begin_inset Formula $\frac{{X}}{N}=10$
+\end_inset
+
+) would decrease the total number of shares to 
+\begin_inset Formula $N-b=800K$
+\end_inset
+
+.
+ We own 
+\begin_inset Formula $\frac{{b}}{N}=20\%$
+\end_inset
+
+ of the company but 
+\begin_inset Formula $\frac{{1-b}}{N}=80\%$
+\end_inset
+
+ of the company is still in the market.
+ It's value would be higher because bid-prices are lower than the ask price
+ (I would sell at a higher value than what I bought at).
+\end_layout
+
+\begin_layout Standard
+Trading a lot of underlying rather than the free-float.
+ The more shares you trade, the less favorable conditions would be.
+ The hedging function would also make this evident.
+ 
+\end_layout
+
+\begin_layout Standard
+If one hedges such position (daily-rebalancing) one realizes the riskiness
  of the position.
  Calculate VaR as well.
 \end_layout
