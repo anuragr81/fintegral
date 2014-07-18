@@ -43,24 +43,24 @@ generate_path <- function (S_0,r_f,vol,dt,T){
 
 #========== BARRIER PRICER ============
 
-value_upandin_func <- function(S,K,B){
+value_downandout_func <- function(S,K,B){
 # if S shoots up above B payoff is S_T-K
-		if (max(S)>B){
-                return(max(S[length(S)]-K,0))
-			}else{
-				return(0)
-			}
+   if (min(S)<B){
+               return(0);
+   }else{
+               return(max(S[length(S)]-K,0));
+   }
 }
 
 
-value_upandin <- function (npaths,S_0,K,B,r_f,vol,dt,T) {
+value_downandout <- function (npaths,S_0,K,B,r_f,vol,dt,T) {
 
 res=array(0);
 out=array(0);
 
 for ( i in seq(npaths)) {
                 paths=generate_path(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T)
-		out[i]=value_upandin_func(S=paths$values,K=K,B=B);
+		out[i]=value_downandout_func(S=paths$values,K=K,B=B);
 }
 
 res=(sum(out)/length(out))*exp(-r_f*T);
