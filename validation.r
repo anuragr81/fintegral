@@ -145,7 +145,15 @@ simul <- function(){
     hist(out); return(sd(out));
 }
 
-
+show_barrier_opt <- function(t,callprice,calldelta,doutprice,doutdelta) {
+    plot(0,0,xlab="Time", ylab="Prices" , xlim=c(0,max(t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
+    cl<-rainbow(4);
+    lines(t,callprice/max(callprice),col=cl[1],lty=1)
+    lines(t,calldelta,col=cl[2],lty=2);
+    lines(t,doutprice/max(doutprice),col=cl[3],lty=3);
+    lines(t,doutdelta,col=cl[4],lty=4);
+    legend(.5,.2,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
+}
 testBarrier<- function(){
 S_0=100;
 K=90
@@ -160,7 +168,11 @@ path = generate_path(S_0,r_f,vol,dt,T);
 S_t=path$values
 cb=value_downandout_exp(S_0=S_0,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
 c=bscallprice(S_0=S_0,K=K,r_f=r_f,vol=vol,t=t,T);
-ts.plot(ts(cb),ts(c$price))
+dS=.001
+cbn=value_downandout_exp(S_0=S_0+dS,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+delta=(cbn-cb)/dS
+show_barrier_opt(t,c$price,c$delta,doutprice=cb,doutdelta=delta)
+#ts.plot(ts(delta))
 
 }
 
