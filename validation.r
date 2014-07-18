@@ -146,22 +146,40 @@ simul <- function(){
 }
 
 
-value_downandout_exp <- function(S_0,K,B,r_f,vol,dt,T) {
+testBarrier<- function(){
+S_0=100;
+K=90
+B=89
+r_f=.05
+vol=.3
+T=1;
+dt=.01;
 nh=T/dt
 t=seq(0:(nh-1))*dt
 path = generate_path(S_0,r_f,vol,dt,T);
 S_t=path$values
-cbs=bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
-cbsi=bscallprice(S_0=(B*B/S_t),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
-n1=cbs$price
-n2=((S_t/rep(B,nh))^(1-(2*r_f/(vol*vol)))*cbsi$price)
-ts.plot(ts(n1-n2),ts(cbs$price))
-return(data.frame(T_t=T-t,S_t=S_t,price=n1-n2))
-#ts.plot(S_t,ts((S_t[1]^2)/S_t)) # <-- beauty
+cb=value_downandout_exp(S_0=S_0,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+c=bscallprice(S_0=S_0,K=K,r_f=r_f,vol=vol,t=t,T);
+ts.plot(ts(cb),ts(c$price))
 
 }
 
+value_downandout_exp <- function(S_0,K,B,r_f,vol,t,T) {
+cbs=bscallprice(S_0=S_0,K=K,r_f=r_f,vol=vol,t=t,T);
+cbsi=bscallprice(S_0=(B*B/S_0),K=K,r_f=r_f,vol=vol,t=t,T=T);
+n1=cbs$price
+n2=((S_0/B)^(1-(2*r_f/(vol*vol)))*cbsi$price)
+return(n1-n2);
+#ts.plot(S_0,ts((S_0[1]^2)/S_0)) # <-- beauty
 
+}
+
+delta_downandout_exp <-function(S_0,K,B,r_f,vol,dt,T){
+   cbs=value_downandout_exp(S_0=S_0,K=K,B=B,r_f=r_f,vol=vol,dt=dt,T=T)
+   dS=.001;
+   cbsnext=value_downandout_exp(S_0=S_0+dS,K=K,B=B,r_f=r_f,vol=vol,dt=dt,T=T)
+   return ((cbsnext$price-cbs$price)/dS)
+}
 
 testBS <- function(){
 # observations: 
