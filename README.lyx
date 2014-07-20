@@ -450,8 +450,10 @@ AskPrice
 \end_layout
 
 \begin_layout Standard
-If somone buys a lot then, the market moves - since the the new prices are
- not known any more.
+If somone buys a lot then, the market moves (i.e.
+ stock-price increases when you buy more) - since the the new prices are
+ not known any more (See: http://money.stackexchange.com/questions/15156/how-do-ex
+changes-match-limit-orders) .
  The depth of the book is a a good measure of liquidity and liquidity ratio
  is a good proxy for the depth of book.
  An increase (decrease) in the liquidity ratio is associated with an increase
@@ -650,7 +652,7 @@ Trading a lot of underlying rather than the free-float.
 \begin_layout Standard
 If one hedges such position (daily-rebalancing) one realizes the riskiness
  of the position.
- Calculate VaR as well.
+ Calculating VaR shows this.
 \end_layout
 
 \begin_layout Standard
@@ -671,7 +673,7 @@ d\Pi & = & \alpha dB+\Delta dS
 
 \begin_layout Standard
 Equating above with Ito's Lemma gives us Black-Scholes equation.
- This has been valued empirically using a simulated approach as well.
+ This has been valued empirically using a simulated approach.
 \end_layout
 
 \begin_layout Standard
@@ -679,6 +681,58 @@ The Hedging PNL is compared for plain call option and the barrier option
  in light of the trading of underlying.
  The trading of underlying itself affects the price itself - thus posing
  costs on top of the flat transaction costs.
+\end_layout
+
+\begin_layout Subsection
+Tasks
+\end_layout
+
+\begin_layout Enumerate
+Calculate Amivest Ratio
+\end_layout
+
+\begin_layout Enumerate
+Assume a certain Amivest ratio 
+\begin_inset Formula $A=\frac{\partial P}{\partial V}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+In the hedging portfolio, modify the PNL function to simulate the change
+ of price in response to traded volume.
+ The PNL change in response to bought shares 
+\begin_inset Formula $dV$
+\end_inset
+
+ can be approximated as 
+\begin_inset Formula $\Delta PNL=(P+A\partial V)\cdot(V+\partial V)-PV=(P+AV)\partial V$
+\end_inset
+
+.
+ In other words, the simulated PNL evolves as 
+\begin_inset Formula $\frac{\partial(PNL)}{\partial V}=P+AV$
+\end_inset
+
+.
+ With transaction costs, this becomes 
+\begin_inset Formula $\frac{\partial(PNL)}{\partial V}=P+AV-c$
+\end_inset
+
+ where 
+\begin_inset Formula $c=$
+\end_inset
+
+the rate of transaction costs (per unit of bought volume).
+\end_layout
+
+\begin_layout Enumerate
+Observe Hedging PNL with transactions costs of a regular option
+\end_layout
+
+\begin_layout Enumerate
+Observe Hedging PNL with transaction costs of a down-and-out option
 \end_layout
 
 \begin_layout Standard
