@@ -73,13 +73,8 @@ return (data.frame(left=values_left,right=values_right));
 
 }
 
-#==========
-
-num_stocks_to_short <- function(underlying_price,delta,nxtdelta,gamma,dgamma,nShortedStocks,dS){
-#    return ((1/underlying_price)*((delta-nShortedStocks)*dS+gamma*(dS^2)/2+dgamma*(dS^3)/6));
-#    return ((1/underlying_price)*((delta-nShortedStocks)*dS+gamma*(dS^2)/2));
-    return ((1/underlying_price)*((delta-nShortedStocks)*dS));
-#     return ((nxtdelta-delta));
+num_stocks_to_short <- function(underlying_price,tc,delta,nShortedStocks,dS){
+    return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
 }
 
 num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
@@ -104,7 +99,7 @@ show_stock_opt <- function(path,option_prices,hedged_pos) {
     legend(1,-20,c("option","stock","hedged pos"),col=cl, lty=c(1,2,3));
 }
 
-hedged_position <- function (S_0,r_f,vol,dt,T,K) {
+hedged_position <- function (S_0,r_f,vol,dt,T,K,tc) {
     path = generate_path(S_0,r_f,vol,dt,T);
     nh = length(path$values);
     option_prices=array();
@@ -115,33 +110,35 @@ hedged_position <- function (S_0,r_f,vol,dt,T,K) {
     hedged_pos[1] =  -nShortedStocks*(path$values[1]) + bs$price[1];
     for ( i in seq (2,nh) ) {
            dS= path$values[i] - path$values[i-1];
-           nShort=num_stocks_to_short(underlying_price=path$values[i],delta=bs$delta[i-1],nxtdelta=bs$delta[i],gamma=bs$gamma[i-1],nShortedStocks=nShortedStocks,dS=dS);
+           nShort=num_stocks_to_short(tc=tc,underlying_price=path$values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
            nShortedStocks = nShortedStocks + nShort;
            hedged_pos[i] =  -nShortedStocks*(path$values[i]) + bs$price[i];
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
-    show_deltas(path,bs,hedged_pos)
+    #show_deltas(path,bs,hedged_pos)
     return(hedged_pos);
 }
 
 simul <- function(){
     S_0=50;
-    vol=.9;
+    vol=.1;
     dt=.01;
     T=2;
-    K=50;
+    K=60;
     r_f=.05;
+    tc=.4;
     out=array();
  
-    return(hedged_position(S_0,r_f,vol,dt,T,K));
+    #return(hedged_position(S_0,r_f,vol,dt,T,K,tc));
    
     for ( k in seq(500)){
-        out[k]=sd(hedged_position(S_0,r_f,vol,dt,T,K));
+        out[k]=sd(hedged_position(S_0,r_f,vol,dt,T,K,tc));
     }
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
     #cat(out);
     #sink();
     print(out);
+    print(mean(out))
     hist(out); return(sd(out));
 }
 
