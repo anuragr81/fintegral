@@ -145,7 +145,7 @@ simul <- function(){
     hist(out); return(sd(out));
 }
 
-show_barrier_opt <- function(t,callprice,calldelta,doutprice,doutdelta) {
+show_barrier_opt_wrt_time <- function(t,callprice,calldelta,doutprice,doutdelta) {
     plot(0,0,xlab="Time", ylab="Prices" , xlim=c(0,max(t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
     cl<-rainbow(4);
     lines(t,callprice/max(callprice),col=cl[1],lty=1)
@@ -154,25 +154,40 @@ show_barrier_opt <- function(t,callprice,calldelta,doutprice,doutdelta) {
     lines(t,doutdelta,col=cl[4],lty=4);
     legend(.5,.2,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
 }
+
+show_barrier_opt_wrt_stock <- function(S_t,callprice,calldelta,doutprice,doutdelta) {
+    plot(0,0,xlab="Underlying", ylab="Prices" , xlim=c(0,max(S_t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
+    cl<-rainbow(4);
+    lines(S_t,callprice/max(callprice),col=cl[1],lty=1)
+    lines(S_t,calldelta,col=cl[2],lty=2);
+    lines(S_t,doutprice/max(doutprice),col=cl[3],lty=3);
+    lines(S_t,doutdelta,col=cl[4],lty=4);
+    #legend(S_t[1]/32,.6,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
+}
+
+
 testBarrier<- function(){
 S_0=100;
-K=90
-B=89
-r_f=.05
-vol=.3
+K=90;
+B=89;
+r_f=.05;
+vol=.3;
 T=1;
 dt=.01;
 nh=T/dt
-t=seq(0:(nh-1))*dt
+#t=seq(0:(nh-1))*dt
+t=rep(0,nh)
 path = generate_path(S_0,r_f,vol,dt,T);
-S_t=path$values
-cb=value_downandout_exp(S_0=S_0,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
-c=bscallprice(S_0=S_0,K=K,r_f=r_f,vol=vol,t=t,T);
+#S_t=path$values
+S_t=B-20+S_0*seq(1:nh)/nh
+
+cb=value_downandout_exp(S_0=S_t,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+
+c=bscallprice(S_0=S_t,K=K,r_f=r_f,vol=vol,t=t,T);
 dS=.001
-cbn=value_downandout_exp(S_0=S_0+dS,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+cbn=value_downandout_exp(S_0=S_t+dS,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
 delta=(cbn-cb)/dS
-show_barrier_opt(t,c$price,c$delta,doutprice=cb,doutdelta=delta)
-#ts.plot(ts(delta))
+show_barrier_opt_wrt_stock(S_t,c$price,c$delta,doutprice=cb,doutdelta=delta)
 
 }
 
