@@ -1,0 +1,359 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\paragraph_spacing double
+Delta Hedging for Options and Stocks Portfolio
+\end_layout
+
+\begin_layout Section*
+\paragraph_spacing double
+Introduction
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+If we assume a simple portfolio with long one option and short 
+\begin_inset Formula $n$
+\end_inset
+
+ stocks, then as the price of a stock goes up the option price would increase
+ and the short position in stock would become more negative - a delta neutral
+ strategy would imply selling some stock in this scenario(increasing short
+ position).
+ Similarly, if the stock price decreases, the call option price would decrease
+ and delta strategy would imply buying some stock (reducing short position).
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+In this scenario, our initial position is 
+\begin_inset Formula $P_{0}-nS_{0}$
+\end_inset
+
+ while our position after a price changes becomes 
+\begin_inset Formula $P_{t}-nS_{t}$
+\end_inset
+
+ .
+ With delta-strategy, when price increases i.e.
+ 
+\begin_inset Formula $P_{t}>P_{0}$
+\end_inset
+
+, we increase our short position by
+\begin_inset Formula $x$
+\end_inset
+
+ shares so that our position becomes - 
+\begin_inset Formula $P_{t}-(n+x)S_{t}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Therefore, change in position is:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula 
+\begin{equation}
+P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Rightarrow x=\frac{{\Delta P-n\Delta S}}{S_{t}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Our goal is to keep this change closest to zero as possible for small changes
+ in 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ A successful delta-strategy would thus choose 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $n$
+\end_inset
+
+ accordingly.
+ For small changes, indeed the first-order approximation could work (
+\begin_inset Formula $\delta_{0}=\Delta P/\Delta S$
+\end_inset
+
+ ).
+ If we choose delta to be constant for a sufficiently small interval, then
+ the change becomes:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula $(\delta_{0}-n)\Delta S-xS_{t}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Setting this to zero would give us 
+\begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}}$
+\end_inset
+
+.
+ Clearly, in the case of linear approximation, nothing needs to be done
+ if 
+\begin_inset Formula $n=\delta_{0}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+One may also use the Taylor polynomial for better approximations.
+ Using second-order approximations(i.e.
+\begin_inset Formula $\gamma$
+\end_inset
+
+), for example, one obtains:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula $\Delta P=P_{t}-P_{0}=\delta_{0}\Delta S+\gamma_{0}(\Delta S)^{2}/2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Using (1), 
+\begin_inset Formula $x$
+\end_inset
+
+ can be approximated as :
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula 
+\begin{equation}
+x=\frac{{(\delta_{0}-n)\Delta S+\gamma_{0}(\Delta S)^{2}/2}}{S_{t}}
+\end{equation}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+In a real-world world scenario, deltas and gammas can hardly be assumed
+ as constant.
+ One often relies on the Black-Scholes model to arrive at delta and gamma
+ values for above analysis.
+ Relieving the assumptions of constant volatility further (e.g.
+ using IVF) could provide still better approximations.
+ What also matters in the real-world is the rebalancing frequency - if there
+ is big jump in stock price (high 
+\begin_inset Formula $\Delta S$
+\end_inset
+
+) relative to the rebalancing interval, then the equation 
+\begin_inset Formula $(1)$
+\end_inset
+
+ doesn't provide a reasonable approximation.
+ In such a case, one is better off estimating 
+\begin_inset Formula $x$
+\end_inset
+
+ by using
+\begin_inset Formula $P_{t}-P_{0}$
+\end_inset
+
+directly i.e.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x=\frac{{(P_{t}-P_{0})-n\cdot(\Delta S)}}{S_{t}}
+\end{equation}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Of course, the assumption here is that we have apriori knowledge price of
+ options and stocks at the rebalancing points.
+ This is an unrealistic assumption but since our purpose here is only to
+ demonstrate the case when 
+\begin_inset Formula $\Delta P$
+\end_inset
+
+ can be estimated accurately, we calculating
+\begin_inset Formula $\Delta P$
+\end_inset
+
+ assuming that the model predicted options prices are real prices.
+ A real-world delta-strategy would aim to solve the equation by predicting
+ the close-to market values of 
+\begin_inset Formula $\int dS$
+\end_inset
+
+ and 
+\begin_inset Formula $\int dP$
+\end_inset
+
+.
+ A simple delta-strategy only looks at short-term variations 
+\begin_inset Formula $dP$
+\end_inset
+
+ and 
+\begin_inset Formula $dS$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+x=\frac{{\int dP-n*\int dS}}{S_{t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that in (2), 
+\begin_inset Formula $\int dP$
+\end_inset
+
+ is set as 
+\begin_inset Formula $P_{t}-P_{0}$
+\end_inset
+
+because of the assumption stated above.
+\end_layout
+
+\begin_layout Section*
+\paragraph_spacing double
+Simulation
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+We start with 
+\begin_inset Formula $n=\delta_{0}$
+\end_inset
+
+ i.e.
+ the first step of static hedging.
+ Further, we evolve the stock prices using the geometric Brownian process
+ 
+\begin_inset Formula $dS/S=\mu\Delta t+\sigma\epsilon\sqrt{\Delta t}$
+\end_inset
+
+ and treat them as observed market prices for the analysis.
+ With this assumption in place, the Black-Scholes deltas are market-deltas
+ and hence we expect a suggested delta-neutral strategy to perfectly hedge
+ the total exposure.
+ In other words, if we start with a portfolio of an option and 
+\begin_inset Formula $\delta_{0}$
+\end_inset
+
+stocks, then over a period of time 
+\begin_inset Formula $T$
+\end_inset
+
+, while a delta-neutral strategy is active, we expect to observe that our
+ PNL is not too different from its original value despite the prices having
+ moved significantly above or below.
+ This is indeed the true intention of a delta-neutral strategy - the performance
+ of which is evaluated by looking at the deviation from original PNL.
+ This performance does seem to get worse with increasing variance of stocks.
+\end_layout
+
+\end_body
+\end_document
