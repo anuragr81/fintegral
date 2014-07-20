@@ -64,7 +64,7 @@
 Delta Hedging for Options and Stocks Portfolio
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 \paragraph_spacing double
 Introduction
 \end_layout
@@ -81,6 +81,10 @@ If we assume a simple portfolio with long one option and short
  position).
  Similarly, if the stock price decreases, the call option price would decrease
  and delta strategy would imply buying some stock (reducing short position).
+\end_layout
+
+\begin_layout Subsection
+Hedging Portfolio
 \end_layout
 
 \begin_layout Standard
@@ -315,6 +319,102 @@ Note that in (2),
 \end_inset
 
 because of the assumption stated above.
+\end_layout
+
+\begin_layout Subsection
+Transaction Costs
+\end_layout
+
+\begin_layout Standard
+Transactions in the real world are at a cost.
+ This is a fee based on the volume of the trade - which would affect the
+ PNL as well.
+ Proceeding with the argument similar to above, let our initial position
+ be 
+\begin_inset Formula $P_{0}-nS_{0}$
+\end_inset
+
+.
+ One the price changes our position becomes 
+\begin_inset Formula $P_{t}-nS_{t}$
+\end_inset
+
+ and the delta-strategy would suggest shorting stocks when the price increases
+ i.e.
+ 
+\begin_inset Formula $P_{t}>P_{0}$
+\end_inset
+
+ i.e.
+ increase the short position by
+\begin_inset Formula $x$
+\end_inset
+
+ shares so that the position is - 
+\begin_inset Formula $P_{t}-(n+x)S_{t}-x\cdot c$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Therefore, change in position is:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula 
+\[
+P_{t}-P_{0}-n(S_{t}-S_{0})-x(S_{t}+c)=0\Rightarrow\Delta P-n\Delta S-x(S_{t}+c)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x=\frac{{\Delta P-n\Delta S}}{c+S_{t}}=\frac{{(\delta_{0}-n)\Delta S}}{c+S_{t}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here the approximation
+\begin_inset Formula $\delta_{0}=\frac{{\Delta P}}{\Delta S}$
+\end_inset
+
+ was used as before.
+\end_layout
+
+\begin_layout Subsection
+Liquidity concerns
+\end_layout
+
+\begin_layout Standard
+Another complication of the real world comes because of changes in price
+ with increase in trading volumes.
+ If we assume an Amivest ration of 
+\begin_inset Formula $\alpha=\frac{{\partial P}}{\partial V}$
+\end_inset
+
+.
+ Notice that this means we cannot use 
+\begin_inset Formula $\delta_{0}=\frac{{\Delta P}}{\Delta S}$
+\end_inset
+
+ any more, rather the equation becomes: 
+\begin_inset Formula $dP=\delta_{0}dS+A_{0}dV$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section*
