@@ -156,19 +156,19 @@ show_barrier_opt_wrt_time <- function(t,callprice,calldelta,doutprice,doutdelta)
 }
 
 show_barrier_opt_wrt_stock <- function(S_t,callprice,calldelta,doutprice,doutdelta) {
-    plot(0,0,xlab="Underlying", ylab="Prices" , xlim=c(0,max(S_t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
+    plot(0,0,xlab="Underlying", ylab="Prices" , xlim=c(0,max(S_t)),ylim=c( min(0,min(calldelta)), max(calldelta)))
     cl<-rainbow(4);
     #lines(S_t,callprice/max(callprice),col=cl[1],lty=1)
     lines(S_t,calldelta,col=cl[2],lty=2);
     #lines(S_t,doutprice/max(doutprice),col=cl[3],lty=3);
-    #lines(S_t,doutdelta,col=cl[4],lty=4);
+    lines(S_t,doutdelta,col=cl[4],lty=4);
     #legend(S_t[1]/32,.6,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
 }
 
 
 testBarrier<- function(){
 S_0=100;
-K=110;
+K=80;
 B=89;
 r_f=.05;
 vol=.3;
@@ -179,7 +179,7 @@ nh=T/dt
 t=rep(0,nh)
 path = generate_path(S_0,r_f,vol,dt,T);
 #S_t=path$values
-S_t=(S_0)*seq(1:nh)/nh
+S_t=2*(S_0)*seq(1:nh)/nh
 
 cb=value_downandout_exp(S_0=S_t,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
 
@@ -214,25 +214,20 @@ r_f=.1
 vol=.5
 dt=.01
 T=3
-K=110
+K=70
 path = generate_path(S_0,r_f,vol,dt,T);
 nh=T/dt
 start=0
 end=2
 df=(end-start)/nh
 volvec=seq(start,end-df,df)
-#bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
-S_t=S_0*(1+seq(1:nh))/nh;
+S_t=2*S_0*(1+seq(1:nh))/nh;
 bs = bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=rep(0,nh),T=rep(T,nh));
-#plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
 plot(0,0,xlab="Stock", ylab="", xlim=c(0,max(S_t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
 cl<-rainbow(2);
-#lines(path$t,bs$delta,col=cl[1],lty=1)
-#lines(path$t,bs$price/K,col=cl[2],lty=2);
 lines(S_t,bs$delta,col=cl[1],lty=1)
 lines(S_t,bs$price/K,col=cl[2],lty=2);
 legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
-
 
 }
 testBS <- function(){
