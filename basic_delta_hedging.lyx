@@ -351,7 +351,7 @@ Transactions in the real world are at a cost.
 \end_inset
 
  shares so that the position is - 
-\begin_inset Formula $P_{t}-(n+x)S_{t}-x\cdot c$
+\begin_inset Formula $P_{t}-(n+x)S_{t}-|x|\cdot c$
 \end_inset
 
 .
@@ -367,7 +367,7 @@ Therefore, change in position is:
 \paragraph_spacing double
 \begin_inset Formula 
 \[
-P_{t}-P_{0}-n(S_{t}-S_{0})-x(S_{t}+c)=0\Rightarrow\Delta P-n\Delta S-x(S_{t}+c)=0
+P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}-|x|\cdot c=0\Rightarrow\Delta P-n\Delta S-xS_{t}-|x|\cdot c=0
 \]
 
 \end_inset
@@ -376,9 +376,36 @@ P_{t}-P_{0}-n(S_{t}-S_{0})-x(S_{t}+c)=0\Rightarrow\Delta P-n\Delta S-x(S_{t}+c)=
 \end_layout
 
 \begin_layout Standard
+If 
+\begin_inset Formula $x>0$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-x=\frac{{\Delta P-n\Delta S}}{c+S_{t}}=\frac{{(\delta_{0}-n)\Delta S}}{c+S_{t}}
+x=\frac{{\Delta P-n\Delta S}}{S_{t}-c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}+c}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+whereas if 
+\begin_inset Formula $x<0$
+\end_inset
+
+ (buying-shares):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x=\frac{{\Delta P-n\Delta S}}{S_{t}-c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-c}
 \end{equation}
 
 \end_inset
@@ -401,8 +428,8 @@ Liquidity concerns
 \begin_layout Standard
 Another complication of the real world comes because of changes in price
  with increase in trading volumes.
- If we assume an Amivest ration of 
-\begin_inset Formula $\alpha=\frac{{\partial P}}{\partial V}$
+ If we assume an Amivest ratio of 
+\begin_inset Formula $A=\frac{{\partial P}}{\partial V}$
 \end_inset
 
 .
@@ -411,10 +438,108 @@ Another complication of the real world comes because of changes in price
 \end_inset
 
  any more, rather the equation becomes: 
-\begin_inset Formula $dP=\delta_{0}dS+A_{0}dV$
+\begin_inset Formula 
+\begin{equation}
+dP=\frac{{\partial P}}{\partial S}dS+\frac{{\partial P}}{\partial V}dV=\delta_{0}dS+A_{0}dV
+\end{equation}
+
 \end_inset
 
-.
+ Increasing the short position by 
+\begin_inset Formula $x$
+\end_inset
+
+ shares number of traded shares, now results in the following equations:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula 
+\[
+P_{t}-(n+x)S_{t}-|x|\cdot c-(P_{0}-nS_{0})=0\Rightarrow P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}-|x|\cdot c=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\begin_inset Formula 
+\[
+\Rightarrow\Delta P-n\Delta S=xS_{t}+|x|\cdot c
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Rightarrow\delta_{0}\Delta S+A_{0}x-n\Delta S=xS_{t}+|x|\cdot c\Rightarrow(\delta_{0}-n)\Delta S=x(S_{t}-A_{0})+|x|\cdot c$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $x>0$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-A_{0}+c}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and if 
+\begin_inset Formula $x<0$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-A_{0}-c}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Clearly, it is no more delta itself that determines the hedge direction.
+ 
 \end_layout
 
 \begin_layout Section*

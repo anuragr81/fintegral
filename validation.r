@@ -74,7 +74,22 @@ return (data.frame(left=values_left,right=values_right));
 }
 
 num_stocks_to_short <- function(underlying_price,tc,delta,nShortedStocks,dS){
-    return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
+    # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
+    numerator=(delta-nShortedStocks)*dS
+    if (numerator>0){
+       denominator=underlying_price+tc # always +ve
+       return (numerator/denominator)
+    } else {
+       denominator=underlying_price-tc # for -ve return values
+       if (denominator>0){
+            return(numerator/denominator); # -ve return value
+       } else {
+            print("Error: invalid hedge parameters");
+            return (0); # do nothing
+       }
+    }
+    #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
+
 }
 
 num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
@@ -82,12 +97,12 @@ num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
 }
 
 show_deltas <- function(path,bs,hedged_pos) {
-    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition", xlim=c(0,max(path$t)),ylim=c(-max(2*hedged_pos),max(2*hedged_pos)));
+    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(path$t)),ylim=c(-2,3));
     cl<-rainbow(2);
     lines(path$t,bs$delta,col=cl[1],lty=1)
-    lines(path$t,hedged_pos,col=cl[2],lty=2);
+    lines(path$t,hedged_pos/max(abs(hedged_pos)),col=cl[2],lty=2);
     print(hedged_pos)
-    legend(1,10,c("delta","hedged pos"),col=cl, lty=c(1,2));
+    legend(1,3,c("delta","hedged pos (normalized)"),col=cl, lty=c(1,2));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
@@ -99,7 +114,12 @@ show_stock_opt <- function(path,option_prices,hedged_pos) {
     legend(1,-20,c("option","stock","hedged pos"),col=cl, lty=c(1,2,3));
 }
 
-hedged_position <- function (S_0,r_f,vol,dt,T,K,tc) {
+
+pnl_value <- function(S_t,P_t,nShorted,tc) {
+   return (P_t-nShorted*S_t-abs(nShorted)*tc);
+}
+
+hedged_position <- function (S_0,r_f,vol,dt,T,K,tc,calculate) {
     path = generate_path(S_0,r_f,vol,dt,T);
     nh = length(path$values);
     option_prices=array();
@@ -107,39 +127,47 @@ hedged_position <- function (S_0,r_f,vol,dt,T,K,tc) {
     bs=bscallprice(S_0=path$values,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
 
     nShortedStocks = bs$delta[1];
-    hedged_pos[1] =  -nShortedStocks*(path$values[1]) + bs$price[1];
+    hedged_pos[1] =  pnl_value(S_t=path$values[1],P_t=bs$price[1],nShorted=nShortedStocks,tc=tc)
+
     for ( i in seq (2,nh) ) {
            dS= path$values[i] - path$values[i-1];
            nShort=num_stocks_to_short(tc=tc,underlying_price=path$values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
            nShortedStocks = nShortedStocks + nShort;
-           hedged_pos[i] =  -nShortedStocks*(path$values[i]) + bs$price[i];
+           hedged_pos[i] = pnl_value(S_t=path$values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
-    #show_deltas(path,bs,hedged_pos)
+    if (calculate==0){
+       show_deltas(path,bs,hedged_pos)
+    }
+    
     return(hedged_pos);
 }
 
-simul <- function(){
+simul <- function(calculate){
     S_0=50;
-    vol=.1;
-    dt=.01;
+    vol=.4;
+    dt=.1;
     T=2;
-    K=60;
+    K=50;
     r_f=.05;
     tc=.4;
     out=array();
- 
-    #return(hedged_position(S_0,r_f,vol,dt,T,K,tc));
-   
-    for ( k in seq(500)){
-        out[k]=sd(hedged_position(S_0,r_f,vol,dt,T,K,tc));
+    mean_k=array();
+    if (calculate==0){
+        return(hedged_position(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T,K=K,tc=tc,calculate=calculate));
+    } else {
+        for ( k in seq(1000)){
+	    pos_k=hedged_position(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T,K=K,tc=tc,calculate=calculate);
+            out[k]=sd(pos_k)
+	    mean_k[k]=mean(pos_k)
+        }
+        #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
+        #cat(out);
+        #sink();
+        #print(out);
+        print(mean(mean_k))
+        hist(out); print(mean(out));
     }
-    #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
-    #cat(out);
-    #sink();
-    print(out);
-    print(mean(out))
-    hist(out); return(sd(out));
 }
 
 show_barrier_opt_wrt_time <- function(t,callprice,calldelta,doutprice,doutdelta) {
