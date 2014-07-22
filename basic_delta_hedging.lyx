@@ -447,118 +447,81 @@ Liquidity concerns
 
 \begin_layout Standard
 Another complication of the real world comes because of changes in price
- with increase in trading volumes.
+ of the underlyr with increase in trading volumes.
  If we assume an Amivest ratio of 
-\begin_inset Formula $A=\frac{{\partial P}}{\partial V}$
+\begin_inset Formula $\alpha=\frac{{\partial S}}{\partial V}$
+\end_inset
+
+ .
+ The selling
+\begin_inset Formula $x$
+\end_inset
+
+ shares at 
+\begin_inset Formula $S_{t}$
+\end_inset
+
+with Amivest ratio 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ would reduce the price of the underlying to 
+\begin_inset Formula $S_{t}-dS=S_{t}-\alpha x$
 \end_inset
 
 .
- Notice that this means we cannot use 
-\begin_inset Formula $\delta_{0}=\frac{{\Delta P}}{\Delta S}$
+ The net PNL after selling would therefore change from 
+\begin_inset Formula $P_{0}-nS_{0}$
 \end_inset
 
- any more, rather the equation becomes: 
+to 
+\begin_inset Formula $P_{t}-(n+x)(S_{t}-\alpha x)$
+\end_inset
+
+.
+ The change (which needs to be close to zero) would therefore become: 
+\begin_inset Formula $P_{t}-(nS_{t}-n\alpha x+S_{t}x-\alpha x^{2})-P_{0}+nS_{0}=\Delta P-n\Delta S+n\alpha x-S_{t}x+\alpha x^{2}$
+\end_inset
+
+.
+ Using 
+\begin_inset Formula $\delta_{0}=\frac{{\partial P}}{\partial S},$
+\end_inset
+
+we can solve for 
+\begin_inset Formula $x$
+\end_inset
+
+ in the following quadratic equation:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-dP=\frac{{\partial P}}{\partial S}dS+\frac{{\partial P}}{\partial V}dV=\delta_{0}dS+A_{0}dV
+\alpha x^{2}+(n\alpha-S_{t})x+(\delta_{0}-n)\Delta S=0
 \end{equation}
 
 \end_inset
 
- Increasing the short position by 
-\begin_inset Formula $x$
-\end_inset
 
- shares number of traded shares, now results in the following equations:
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-\begin_inset Formula 
-\[
-P_{t}-(n+x)S_{t}-|x|\cdot c-(P_{0}-nS_{0})=0\Rightarrow P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}-|x|\cdot c=0
-\]
-
+This leads to the solution 
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha)\pm\sqrt{(S_{t}-n\alpha)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-\begin_inset Formula 
-\[
-\Rightarrow\Delta P-n\Delta S=xS_{t}+|x|\cdot c
-\]
-
+But do consider whether it's the final delta (of the portfolio) which needs
+ to be zero or the 
+\begin_inset Formula $dP$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $\Rightarrow\delta_{0}\Delta S+A_{0}x-n\Delta S=xS_{t}+|x|\cdot c\Rightarrow(\delta_{0}-n)\Delta S=x(S_{t}-A_{0})+|x|\cdot c$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If 
-\begin_inset Formula $x>0$
-\end_inset
-
-,
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-\begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-A_{0}+c}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and if 
-\begin_inset Formula $x<0$
-\end_inset
-
-,
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-\begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-A_{0}-c}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Clearly, it is no more delta itself that determines the hedge direction.
+.
+ Ask what he means?
 \end_layout
 
 \begin_layout Section*
