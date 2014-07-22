@@ -96,13 +96,14 @@ num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
     return ((1/underlying_price)*(dP-nShortedStocks*dS));
 }
 
-show_deltas <- function(path,bs,hedged_pos) {
-    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(path$t)),ylim=c(-2,3));
-    cl<-rainbow(2);
-    lines(path$t,bs$delta,col=cl[1],lty=1)
-    lines(path$t,hedged_pos/max(abs(hedged_pos)),col=cl[2],lty=2);
-    print(hedged_pos)
-    legend(1,3,c("delta","hedged pos (normalized)"),col=cl, lty=c(1,2));
+show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
+    plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(t)),ylim=c(-2,3));
+    cl<-rainbow(4);
+    lines(t,notc_deltas,col=cl[1],lty=1)
+    lines(t,notc_hedged_pos/max(abs(notc_hedged_pos)),col=cl[2],lty=2);
+    lines(t,tc_deltas,col=cl[3],lty=3)
+    lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[4],lty=4);
+    legend(1,3,c("delta(noTC)","hedged pos (normalized-noTC)","delta(TC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3,4));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
@@ -119,54 +120,65 @@ pnl_value <- function(S_t,P_t,nShorted,tc) {
    return (P_t-nShorted*S_t-abs(nShorted)*tc);
 }
 
-hedged_position <- function (S_0,r_f,vol,dt,T,K,tc,calculate) {
-    path = generate_path(S_0,r_f,vol,dt,T);
-    nh = length(path$values);
+
+
+hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc) {
+    nh = length(path_values);
     option_prices=array();
     hedged_pos=array();
-    bs=bscallprice(S_0=path$values,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
+    bs=bscallprice(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
 
     nShortedStocks = bs$delta[1];
-    hedged_pos[1] =  pnl_value(S_t=path$values[1],P_t=bs$price[1],nShorted=nShortedStocks,tc=tc)
+    hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,tc=tc)
 
     for ( i in seq (2,nh) ) {
-           dS= path$values[i] - path$values[i-1];
-           nShort=num_stocks_to_short(tc=tc,underlying_price=path$values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
+           dS= path_values[i] - path_values[i-1];
+           nShort=num_stocks_to_short(tc=tc,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
            nShortedStocks = nShortedStocks + nShort;
-           hedged_pos[i] = pnl_value(S_t=path$values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
+           hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
-    if (calculate==0){
-       show_deltas(path,bs,hedged_pos)
-    }
-    
-    return(hedged_pos);
+    return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
 }
 
 simul <- function(calculate){
     S_0=50;
     vol=.4;
     dt=.1;
-    T=2;
+    T=10;
     K=50;
     r_f=.05;
     tc=.4;
+
+
+    nh=T/dt;
+    vec_r_f=rep(r_f,nh)
+    vec_vol=rep(vol,nh)
     out=array();
     mean_k=array();
+
     if (calculate==0){
-        return(hedged_position(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T,K=K,tc=tc,calculate=calculate));
+    # could be replaced with an IR model
+
+        path = generate_path(S_0,r_f,vol,dt,T);
+        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0);
+        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc);
+
+        show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
     } else {
-        for ( k in seq(1000)){
-	    pos_k=hedged_position(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T,K=K,tc=tc,calculate=calculate);
-            out[k]=sd(pos_k)
-	    mean_k[k]=mean(pos_k)
+        for ( k in seq(500)){
+            path = generate_path(S_0,r_f,vol,dt,T);
+            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc);
+            out[k]=sd(pos_k$hedged_pos)
+	    mean_k[k]=mean(pos_k$hedged_pos)
         }
         #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
         #cat(out);
         #sink();
         #print(out);
-        print(mean(mean_k))
-        hist(out); print(mean(out));
+        print(paste("Average PNL:",mean(mean_k)))
+        #hist(out); 
+        print(paste("mean-stdev(PNL):",mean(out)));
     }
 }
 
