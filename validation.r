@@ -89,7 +89,6 @@ num_stocks_to_short <- function(underlying_price,tc,delta,nShortedStocks,dS){
        }
     }
     #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
-
 }
 
 num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
