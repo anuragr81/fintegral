@@ -148,7 +148,7 @@ simul <- function(calculate){
     T=10;
     K=50;
     r_f=.05;
-    tc=.4;
+    tc=3;
 
 
     nh=T/dt;
