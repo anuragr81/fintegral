@@ -386,7 +386,7 @@ If
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-x=\frac{{\Delta P-n\Delta S}}{S_{t}-c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}+c}
+x=\frac{{\Delta P-n\Delta S}}{S_{t}+c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}+c}
 \end{equation}
 
 \end_inset
@@ -418,7 +418,27 @@ Here the approximation
 \begin_inset Formula $\delta_{0}=\frac{{\Delta P}}{\Delta S}$
 \end_inset
 
- was used as before.
+ was used as before
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Notice that the fluctuations in the 
+\begin_inset Formula $x$
+\end_inset
+
+ are higher than the no-transaction costs case and thus, the net PNL would
+ be far more sensitive to the hedge-frequency (i.e.
+ the time when 
+\begin_inset Formula $x$
+\end_inset
+
+ shares are added/reduced).
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -539,7 +559,6 @@ and if
 
 \begin_layout Standard
 Clearly, it is no more delta itself that determines the hedge direction.
- 
 \end_layout
 
 \begin_layout Section*
