@@ -25,9 +25,10 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -42,6 +43,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 3.5cm
+\topmargin 3cm
+\rightmargin 3.5cm
+\bottommargin 3cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -60,54 +65,56 @@
 \begin_body
 
 \begin_layout Title
-\paragraph_spacing double
+\paragraph_spacing onehalf
 Delta Hedging for Options and Stocks Portfolio
 \end_layout
 
 \begin_layout Section
-\paragraph_spacing double
+\paragraph_spacing onehalf
 Introduction
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-If we assume a simple portfolio with long one option and short 
+\paragraph_spacing onehalf
+A simple portfolio with long one option and short 
 \begin_inset Formula $n$
 \end_inset
 
- stocks, then as the price of a stock goes up the option price would increase
- and the short position in stock would become more negative - a delta neutral
- strategy would imply selling some stock in this scenario(increasing short
- position).
+ stocks is explored in the current exercise.
+ As the price of a underlying (stock) goes up the option price would increase
+ in the portfolio and the short position in stock would become more negative.
+ A delta neutral strategy applied on the portfolio would imply selling some
+ stock (i.e.
+ increasing short position).
  Similarly, if the stock price decreases, the call option price would decrease
  and delta strategy would imply buying some stock (reducing short position).
 \end_layout
 
 \begin_layout Subsection
-Hedging Portfolio
+\paragraph_spacing onehalf
+Hedging the PNL
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-In this scenario, our initial position is 
+\paragraph_spacing onehalf
+Considering the PNL of the hedging portfolio, the initial position is 
 \begin_inset Formula $P_{0}-nS_{0}$
 \end_inset
 
- while our position after a price changes becomes 
+ and position after a price changes is 
 \begin_inset Formula $P_{t}-nS_{t}$
 \end_inset
 
- .
- With delta-strategy, when price increases i.e.
+ .When the price increases i.e.
  
 \begin_inset Formula $P_{t}>P_{0}$
 \end_inset
 
-, we increase our short position by
+, we increase our short position by 
 \begin_inset Formula $x$
 \end_inset
 
- shares so that our position becomes - 
+ shares and our position becomes :
 \begin_inset Formula $P_{t}-(n+x)S_{t}$
 \end_inset
 
@@ -116,12 +123,12 @@ In this scenario, our initial position is
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 Therefore, change in position is:
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Rightarrow x=\frac{{\Delta P-n\Delta S}}{S_{t}}
@@ -133,14 +140,23 @@ P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Righta
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-Our goal is to keep this change closest to zero as possible for small changes
- in 
+\paragraph_spacing onehalf
+The purpose is not to keep the portfolio locally-delta-hedged (which would
+ be equivalent to adjusting the portfolio according to the new delta of
+ the option (i.e.
+ 
+\begin_inset Formula $n+x=\frac{{\partial P}}{\partial S})$
+\end_inset
+
+.
+ The goal instead is to minimize the PNL volatility i.e.
+ keep the change in PNL closest to zero as possible for small changes in
+ 
 \begin_inset Formula $P$
 \end_inset
 
 .
- A successful delta-strategy would thus choose 
+ A successful hedge would thus choose 
 \begin_inset Formula $x$
 \end_inset
 
@@ -148,34 +164,40 @@ Our goal is to keep this change closest to zero as possible for small changes
 \begin_inset Formula $n$
 \end_inset
 
- accordingly.
- For small changes, indeed the first-order approximation could work (
+ to minimize the above PNL change.
+ For small changes, the first-order approximation can work (
 \begin_inset Formula $\delta_{0}=\Delta P/\Delta S$
 \end_inset
 
  ).
- If we choose delta to be constant for a sufficiently small interval, then
- the change becomes:
-\end_layout
-
-\begin_layout Standard
-\paragraph_spacing double
-\begin_inset Formula $(\delta_{0}-n)\Delta S-xS_{t}$
+ More particularly, if we choose delta to be constant for a sufficiently
+ small interval 
+\begin_inset Formula $dt$
 \end_inset
 
-.
- 
+, this change becomes:
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-Setting this to zero would give us 
+\paragraph_spacing onehalf
+\begin_inset Formula 
+\[
+(\delta_{0}-n)\Delta S-xS_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+Setting above to zero gives us 
 \begin_inset Formula $x=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}}$
 \end_inset
 
 .
- Clearly, in the case of linear approximation, nothing needs to be done
- if 
+ In this case of linear approximation, nothing needs to be done if 
 \begin_inset Formula $n=\delta_{0}.$
 \end_inset
 
@@ -183,8 +205,8 @@ Setting this to zero would give us
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-One may also use the Taylor polynomial for better approximations.
+\paragraph_spacing onehalf
+One may further use the Taylor polynomial for better approximations.
  Using second-order approximations(i.e.
 \begin_inset Formula $\gamma$
 \end_inset
@@ -193,7 +215,7 @@ One may also use the Taylor polynomial for better approximations.
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 \begin_inset Formula $\Delta P=P_{t}-P_{0}=\delta_{0}\Delta S+\gamma_{0}(\Delta S)^{2}/2$
 \end_inset
 
@@ -201,16 +223,15 @@ One may also use the Taylor polynomial for better approximations.
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-Using (1), 
+\paragraph_spacing onehalf
 \begin_inset Formula $x$
 \end_inset
 
- can be approximated as :
+ can thus be approximated as :
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 x=\frac{{(\delta_{0}-n)\Delta S+\gamma_{0}(\Delta S)^{2}/2}}{S_{t}}
@@ -222,13 +243,13 @@ x=\frac{{(\delta_{0}-n)\Delta S+\gamma_{0}(\Delta S)^{2}/2}}{S_{t}}
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 In a real-world world scenario, deltas and gammas can hardly be assumed
  as constant.
  One often relies on the Black-Scholes model to arrive at delta and gamma
  values for above analysis.
  Relieving the assumptions of constant volatility further (e.g.
- using IVF) could provide still better approximations.
+ by using an Implied Volatility Function) could provide better approximations.
  What also matters in the real-world is the rebalancing frequency - if there
  is big jump in stock price (high 
 \begin_inset Formula $\Delta S$
@@ -239,7 +260,37 @@ In a real-world world scenario, deltas and gammas can hardly be assumed
 \end_inset
 
  doesn't provide a reasonable approximation.
- In such a case, one is better off estimating 
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+It is a bit like a tailor who has been paid in advance for a suit to be
+ delivered next year for the customer's son who grows exponentially in his
+ teen years.
+ Without knowledge of the height-profile of a typical teen, the tailor can
+ only make guesses based on past measurements.
+ If the customer's son grows really tall in a single year, the tailor would
+ be quite inaccurate about the size of the suit.
+ The higher is the volatility of the teen's height, after all, the more
+ frequently would the suit need to be measured.
+ One year can be too long for the 
+\begin_inset Quotes eld
+\end_inset
+
+rebalancing
+\begin_inset Quotes erd
+\end_inset
+
+ of the suit-size.
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+Of course, such a problem would not exist if the tailor knew how much the
+ teen is going to grow in the next year.
+ In our simulations, we could estimate 
 \begin_inset Formula $x$
 \end_inset
 
@@ -248,10 +299,12 @@ In a real-world world scenario, deltas and gammas can hardly be assumed
 \end_inset
 
 directly i.e.
- 
+ by assuming that we know the price of the derivative as the stock-prices
+ move: 
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 x=\frac{{(P_{t}-P_{0})-n\cdot(\Delta S)}}{S_{t}}
@@ -259,23 +312,13 @@ x=\frac{{(P_{t}-P_{0})-n\cdot(\Delta S)}}{S_{t}}
 
 \end_inset
 
-.
+
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-Of course, the assumption here is that we have apriori knowledge price of
- options and stocks at the rebalancing points.
- This is an unrealistic assumption but since our purpose here is only to
- demonstrate the case when 
-\begin_inset Formula $\Delta P$
-\end_inset
-
- can be estimated accurately, we calculating
-\begin_inset Formula $\Delta P$
-\end_inset
-
- assuming that the model predicted options prices are real prices.
+\paragraph_spacing onehalf
+The assumption that we have apriori knowledge price of options and stocks
+ at the rebalancing points is indeed not a realistic one.
  A real-world delta-strategy would aim to solve the equation by predicting
  the close-to market values of 
 \begin_inset Formula $\int dS$
@@ -285,8 +328,7 @@ Of course, the assumption here is that we have apriori knowledge price of
 \begin_inset Formula $\int dP$
 \end_inset
 
-.
- A simple delta-strategy only looks at short-term variations 
+ while a simple delta-strategy only looks at short-term variations 
 \begin_inset Formula $dP$
 \end_inset
 
@@ -299,6 +341,7 @@ Of course, the assumption here is that we have apriori knowledge price of
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \[
 x=\frac{{\int dP-n*\int dS}}{S_{t}}
@@ -309,33 +352,23 @@ x=\frac{{\int dP-n*\int dS}}{S_{t}}
 
 \end_layout
 
-\begin_layout Standard
-Note that in (2), 
-\begin_inset Formula $\int dP$
-\end_inset
-
- is set as 
-\begin_inset Formula $P_{t}-P_{0}$
-\end_inset
-
-because of the assumption stated above.
-\end_layout
-
-\begin_layout Subsection
+\begin_layout Section
+\paragraph_spacing onehalf
 Transaction Costs
 \end_layout
 
 \begin_layout Standard
-Transactions in the real world are at a cost.
- This is a fee based on the volume of the trade - which would affect the
- PNL as well.
+\paragraph_spacing onehalf
+Transactions in the real world are always at a cost.
+ This is typically a fee based on the volume of the trade - which affects
+ the PNL as well.
  Proceeding with the argument similar to above, let our initial position
  be 
 \begin_inset Formula $P_{0}-nS_{0}$
 \end_inset
 
 .
- One the price changes our position becomes 
+ Once the price changes our position becomes 
 \begin_inset Formula $P_{t}-nS_{t}$
 \end_inset
 
@@ -355,16 +388,18 @@ Transactions in the real world are at a cost.
 \end_inset
 
 .
- 
+ The modulus operator accounts for the fact that whether we buy or sell
+ shares, we always lose a certain value proportional to the volume in the
+ PNL.
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
-Therefore, change in position is:
+\paragraph_spacing onehalf
+The change in the PNL assuming transaction costs, therefore, becomes:
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \[
 P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}-|x|\cdot c=0\Rightarrow\Delta P-n\Delta S-xS_{t}-|x|\cdot c=0
@@ -376,14 +411,17 @@ P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}-|x|\cdot c=0\Rightarrow\Delta P-n\Delta S-xS_{
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 If 
 \begin_inset Formula $x>0$
 \end_inset
 
-,
+ (i.e.
+ we're shorting more shares), 
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 x=\frac{{\Delta P-n\Delta S}}{S_{t}+c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}+c}
@@ -395,14 +433,17 @@ x=\frac{{\Delta P-n\Delta S}}{S_{t}+c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}+c}
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 whereas if 
 \begin_inset Formula $x<0$
 \end_inset
 
- (buying-shares):
+ (i.e.
+ we're buying-shares or reducing our short-position):
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 x=\frac{{\Delta P-n\Delta S}}{S_{t}-c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-c}
@@ -414,6 +455,7 @@ x=\frac{{\Delta P-n\Delta S}}{S_{t}-c}=\frac{{(\delta_{0}-n)\Delta S}}{S_{t}-c}
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 Here the approximation
 \begin_inset Formula $\delta_{0}=\frac{{\Delta P}}{\Delta S}$
 \end_inset
@@ -441,19 +483,20 @@ Notice that the fluctuations in the
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
+\paragraph_spacing onehalf
 Liquidity concerns
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 Another complication of the real world comes because of changes in price
- of the underlyr with increase in trading volumes.
+ of the underlier with increase in trading volumes.
  If we assume an Amivest ratio of 
 \begin_inset Formula $\alpha=\frac{{\partial S}}{\partial V}$
 \end_inset
 
- .
- The selling
+ , then selling 
 \begin_inset Formula $x$
 \end_inset
 
@@ -496,6 +539,7 @@ we can solve for
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
 \alpha x^{2}+(n\alpha-S_{t})x+(\delta_{0}-n)\Delta S=0
@@ -507,6 +551,7 @@ we can solve for
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
 This leads to the solution 
 \begin_inset Formula $x=\frac{{(S_{t}-n\alpha)\pm\sqrt{(S_{t}-n\alpha)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
 \end_inset
@@ -514,23 +559,124 @@ This leads to the solution
 
 \end_layout
 
-\begin_layout Standard
-But do consider whether it's the final delta (of the portfolio) which needs
- to be zero or the 
-\begin_inset Formula $dP$
-\end_inset
-
-.
- Ask what he means?
+\begin_layout Section
+\paragraph_spacing onehalf
+A generalized model
 \end_layout
 
-\begin_layout Section*
-\paragraph_spacing double
+\begin_layout Standard
+\paragraph_spacing onehalf
+In a model with both liquidity and transaction costs, the PNL change would
+ become: 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\begin_inset Formula $\Delta PNL=P_{t}-(nS_{t}-n\alpha x+S_{t}x-\alpha x^{2})-P_{0}+nS_{0}-|x|c$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Setting the above to zero leads to:
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\begin_inset Formula 
+\begin{equation}
+\Delta P-n\Delta S+n\alpha x-S_{t}x-|x|c+\alpha x^{2}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+If 
+\begin_inset Formula $x>0$
+\end_inset
+
+, we have 
+\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}-c)x+(\delta_{0}-n)\Delta S=0$
+\end_inset
+
+ and 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha-c)\pm\sqrt{(S_{t}-n\alpha-c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+If 
+\begin_inset Formula $x<0,$
+\end_inset
+
+ we have 
+\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}+c)x+(\delta_{0}-n)\Delta S=0$
+\end_inset
+
+ and
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha+c)\pm\sqrt{(S_{t}-n\alpha+c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\end_layout
+
+\begin_layout Section
+\paragraph_spacing onehalf
 Simulation
 \end_layout
 
 \begin_layout Standard
-\paragraph_spacing double
+\paragraph_spacing onehalf
 We start with 
 \begin_inset Formula $n=\delta_{0}$
 \end_inset
