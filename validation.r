@@ -73,7 +73,7 @@ return (data.frame(left=values_left,right=values_right));
 
 }
 
-num_stocks_to_short <- function(underlying_price,tc,delta,nShortedStocks,dS){
+num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nShortedStocks,dS){
     # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
     numerator=(delta-nShortedStocks)*dS
     if (numerator>0){
@@ -91,18 +91,92 @@ num_stocks_to_short <- function(underlying_price,tc,delta,nShortedStocks,dS){
     #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
 }
 
+num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShortedStocks,dS){
+    # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
+    print(paste("S_t=",underlying_price,"n=",nShortedStocks,"amivest=",amivest,"tc=",tc))
+    A  = 2*amivest
+    B1 = underlying_price-nShortedStocks*amivest-tc
+    D1 = (underlying_price-nShortedStocks-tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x>0
+    D2 = (underlying_price-nShortedStocks+tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x<0
+    B2 = underlying_price-nShortedStocks*amivest+tc
+    print(paste("D1=",D1))
+    print(paste("D2=",D2))
+
+    if ( (D1<0) && (D2<0) ){
+            print("Error: invalid hedge parameters (D1,D2) <0");
+            return (0); # do nothing
+    }
+    if (D1<0) {
+       # D2> 0, x<0
+       xO1=(B2+sqrt(D2))/A
+       xO2=(B2-sqrt(D2))/A
+       if (xO1<0){
+            if (xO2<0) {
+               return(max(xO1,xO2))
+            }
+            else {
+               return (xO1);
+            } 
+         } else {
+            if (xO2<0) {
+               return(xO2);
+            } else {
+               print("Error: hedging params (D2,xO)>0)")
+               return (0);
+            }
+         } 
+    }
+    if (D2<0) {
+       # D1>0, x>0
+       xT1=(B1+sqrt(D1))/A
+       xT2=(B1-sqrt(D1))/A
+       if (xT1>0){
+          if (xT2>0){
+                return(min(xT1,xT2));
+          } else {
+                return(xT1);
+          }
+       } else {
+          if (xT2>0){
+                return(xT2);
+          }else{
+               print("Error: hedging params (D2,xT)<0)")
+               return (0);
+          }
+       }  
+    }
+    #D1>0 and D2>0
+    xO1=(B2+sqrt(D2))/A
+    xO2=(B2-sqrt(D2))/A
+    xT1=(B1+sqrt(D1))/A
+    xT2=(B1-sqrt(D1))/A
+    sols=c(xO1,xO2,xT1,xT2)
+    positives=sols[sols>0]
+    negatives=sols[sols<0]
+    if (length(positives)>0){
+        return(min(positives))
+    } else {
+        return(max(negatives))
+    }
+    
+}
+
+
+num_stocks_to_short_deltas <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
+  return(nxtdelta-delta);
+}
+
 num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
     return ((1/underlying_price)*(dP-nShortedStocks*dS));
 }
 
 show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
     plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(t)),ylim=c(-2,3));
-    cl<-rainbow(4);
+    cl<-rainbow(2);
     lines(t,notc_deltas,col=cl[1],lty=1)
     lines(t,notc_hedged_pos/max(abs(notc_hedged_pos)),col=cl[2],lty=2);
-    lines(t,tc_deltas,col=cl[3],lty=3)
-    lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[4],lty=4);
-    legend(1,3,c("delta(noTC)","hedged pos (normalized-noTC)","delta(TC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3,4));
+    lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[3],lty=3);
+    legend(1,3,c("delta","hedged pos (normalized-noTC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3,4));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
@@ -121,7 +195,7 @@ pnl_value <- function(S_t,P_t,nShorted,tc) {
 
 
 
-hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc) {
+hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
     nh = length(path_values);
     option_prices=array();
     hedged_pos=array();
@@ -132,8 +206,12 @@ hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc) {
 
     for ( i in seq (2,nh) ) {
            dS= path_values[i] - path_values[i-1];
-           nShort=num_stocks_to_short(tc=tc,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
+           #nShort=num_stocks_to_short_deltas(tc=tc,underlying_price=path_values[i],delta=bs$delta[i-1],nxtdelta=bs$delta[i],nShortedStocks=nShortedStocks,dS=dS);
+           print(paste("nShortedStocks=",nShortedStocks))
+           nShort=num_stocks_to_short_zerodp_g(tc=tc,amivest=at,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
+           print(paste("Before: nShort=",nShort,"nShortedStocks=",nShortedStocks))
            nShortedStocks = nShortedStocks + nShort;
+           print(paste("After: nShort=",nShort,"nShortedStocks=",nShortedStocks))
            hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
@@ -148,6 +226,7 @@ simul <- function(calculate){
     K=50;
     r_f=.05;
     tc=3;
+    at=0;
 
 
     nh=T/dt;
@@ -160,14 +239,14 @@ simul <- function(calculate){
     # could be replaced with an IR model
 
         path = generate_path(S_0,r_f,vol,dt,T);
-        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0);
-        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc);
+        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
+        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
 
         show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
     } else {
         for ( k in seq(500)){
             path = generate_path(S_0,r_f,vol,dt,T);
-            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc);
+            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
             out[k]=sd(pos_k$hedged_pos)
 	    mean_k[k]=mean(pos_k$hedged_pos)
         }
