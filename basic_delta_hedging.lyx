@@ -608,7 +608,7 @@ If
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $x=\frac{{(S_{t}-n\alpha-c)\pm\sqrt{(S_{t}-n\alpha-c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha+c)\pm\sqrt{(S_{t}-n\alpha+c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
 \end_inset
 
 
@@ -652,7 +652,7 @@ If
 \uwave off
 \noun off
 \color none
-\begin_inset Formula $x=\frac{{(S_{t}-n\alpha+c)\pm\sqrt{(S_{t}-n\alpha+c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha-c)\pm\sqrt{(S_{t}-n\alpha-c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
 \end_inset
 
 
