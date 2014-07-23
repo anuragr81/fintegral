@@ -93,12 +93,16 @@ num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nShortedStocks,
 
 num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShortedStocks,dS){
     # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
-    print(paste("S_t=",underlying_price,"n=",nShortedStocks,"amivest=",amivest,"tc=",tc))
+    #print(paste("S_t=",underlying_price,"n=",nShortedStocks,"amivest=",amivest,"tc=",tc))
+    if (amivest==0){
+       return(num_stocks_to_short_zerodp(underlying_price=underlying_price,tc=tc,delta=delta,nShortedStocks=nShortedStocks,dS=dS));
+    }
+
     A  = 2*amivest
-    B1 = underlying_price-nShortedStocks*amivest-tc
-    D1 = (underlying_price-nShortedStocks-tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x>0
-    D2 = (underlying_price-nShortedStocks+tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x<0
-    B2 = underlying_price-nShortedStocks*amivest+tc
+    B1 = underlying_price-nShortedStocks*amivest+tc
+    D1 = (underlying_price-nShortedStocks*amivest+tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x>0
+    B2 = underlying_price-nShortedStocks*amivest-tc
+    D2 = (underlying_price-nShortedStocks*amivest-tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x<0
     print(paste("D1=",D1))
     print(paste("D2=",D2))
 
@@ -214,6 +218,7 @@ hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
            print(paste("After: nShort=",nShort,"nShortedStocks=",nShortedStocks))
            hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
            #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
+           #readline();
     }
     return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
 }
@@ -225,8 +230,8 @@ simul <- function(calculate){
     T=10;
     K=50;
     r_f=.05;
-    tc=3;
-    at=0;
+    tc=1;
+    at=1;
 
 
     nh=T/dt;
