@@ -7,15 +7,9 @@ dataset <- diamonds
 shinyUI(fluidPage(
   titlePanel("PNL Hedging"),
   fluidRow(
-    selectInput("var", 
-                label = "Choose a variable to display",
-                choices = c("Percent White", "Percent Black",
-                            "Percent Hispanic", "Percent Asian"),
-                selected = "Percent White"),
-    column(3,
-           textOutput("text1")
-#           ,actionButton("action", label = "Simulate")  
-           )
+  
+           mainPanel(plotOutput("data"))
+           
 )))
 
 if(FALSE){
@@ -40,7 +34,7 @@ shinyUI(pageWithSidebar(
   ),
 
   mainPanel(
-    plotOutput('plot')
+    plotOutput('map')
   )
 ))
 
