@@ -1,8 +1,24 @@
 library(shiny)
 library(ggplot2)
 
+
 dataset <- diamonds
 
+shinyUI(fluidPage(
+  titlePanel("PNL Hedging"),
+  fluidRow(
+    selectInput("var", 
+                label = "Choose a variable to display",
+                choices = c("Percent White", "Percent Black",
+                            "Percent Hispanic", "Percent Asian"),
+                selected = "Percent White"),
+    column(3,
+           textOutput("text1")
+#           ,actionButton("action", label = "Simulate")  
+           )
+)))
+
+if(FALSE){
 shinyUI(pageWithSidebar(
 
   headerPanel("Diamonds Explorer"),
@@ -15,7 +31,7 @@ shinyUI(pageWithSidebar(
     selectInput('x', 'X', names(dataset)),
     selectInput('y', 'Y', names(dataset), names(dataset)[[2]]),
     selectInput('color', 'Color', c('None', names(dataset))),
-
+    
     checkboxInput('jitter', 'Jitter'),
     checkboxInput('smooth', 'Smooth'),
 
@@ -27,3 +43,5 @@ shinyUI(pageWithSidebar(
     plotOutput('plot')
   )
 ))
+
+}
