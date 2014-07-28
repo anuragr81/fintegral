@@ -15,32 +15,20 @@ generate_path <- function (S_0,r_f,vol,dt,T){
 }
 ##########################################
 
+display<- function(S_0,K,r_f,vol,dt,T){
+  print(S_0);
+  path = generate_path(S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T);
+  plot(path$t,path$values,type='l')
+}
 shinyServer(
   function(input, output) {
-    path = generate_path(S_0=100,r_f=.05,vol=.1,dt=.01,T=1);
-    #output$plot <- ggplot(path$values, aes_string(x=input$x, y=input$y)) + geom_point()
     output$data  <- renderPlot( 
-                      expr=plot(path$t,path$values,type='l')
+                      expr=display(S_0=input$S_0,
+                                   K=input$K,
+                                   r_f=input$r_f,
+                                   vol=input$vol,
+                                   dt=input$dt,
+                                   T=input$T)
                        )
   }
 )
-
-if (FALSE) {
-  
-
-shinyServer(function(input, output) {
-
-  dataset <- reactive(function() {
-    diamonds[sample(nrow(diamonds), input$sampleSize),]
-  })
-
-  output$plot <- reactivePlot(function() {
-
-    p <- ggplot(dataset(), aes_string(x=input$x, y=input$y)) + geom_point()
-
-    print(p)
-
-  }, height=700)
-
-})
-}
