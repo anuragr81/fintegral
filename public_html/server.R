@@ -3,6 +3,7 @@ library(ggplot2)
 
 ##########################################
 
+
 bscallprice <- function(S_0,K,r_f,vol,t,T){
   numerator=log(S_0/K) + (r_f+(vol*vol)*0.5)*(T-t);
   denominator=vol*sqrt(T-t);
@@ -13,6 +14,35 @@ bscallprice <- function(S_0,K,r_f,vol,t,T){
   delta=pnorm(d1);
   gamma=dnorm(d1)/(S_0*vol*sqrt(T-t));
   return (data.frame(price=price,delta=delta,gamma=gamma));
+}
+
+generate_path <- function (S_0,r_f,vol,dt,T){
+  t=0
+  n=T/dt;
+  z=rnorm(n-1);
+  tarray=seq(0,n-1)*dt
+  vec=cumsum((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
+  values=S_0*exp(vec)
+  values=c(S_0,values) # appending initial value
+  return (data.frame(values=values,t=tarray));
+}
+
+num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nShortedStocks,dS){
+  # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
+  numerator=(delta-nShortedStocks)*dS
+  if (numerator>0){
+    denominator=underlying_price+tc # always +ve
+    return (numerator/denominator)
+  } else {
+    denominator=underlying_price-tc # for -ve return values
+    if (denominator>0){
+      return(numerator/denominator); # -ve return value
+    } else {
+      print("Error: invalid hedge parameters");
+      return (0); # do nothing
+    }
+  }
+  #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
 }
 
 num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShortedStocks,dS){
@@ -86,32 +116,20 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShor
   } else {
     return(max(negatives))
   }
+  
 }
 
-generate_path <- function (S_0,r_f,vol,dt,T){
-  t=0
-  n=T/dt;
-  z=rnorm(n-1);
-  tarray=seq(0,n-1)*dt
-  vec=cumsum((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
-  values=S_0*exp(vec)
-  values=c(S_0,values) # appending initial value
-  return (data.frame(values=values,t=tarray));
+num_stocks_to_short_deltas <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
+  return(nxtdelta-delta);
 }
 
-pnl_value <- function(S_t,P_t,nShorted,tc) {
-  return (P_t-nShorted*S_t-abs(nShorted)*tc);
+num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
+  return ((1/underlying_price)*(dP-nShortedStocks*dS));
 }
 
-show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
-  plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(t)),ylim=c(-2,3));
-  cl<-rainbow(2);
-  lines(t,notc_deltas,col=cl[1],lty=1)
-  lines(t,notc_hedged_pos/max(abs(notc_hedged_pos)),col=cl[2],lty=2);
-  lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[3],lty=3);
-  legend(1,3,c("delta","hedged pos (normalized-noTC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3,4));
+pnl_value <- function(S_t,P_t,nShorted,at,tc) {
+  return (P_t-nShorted*(S_t-nShorted*at)-abs(nShorted)*tc);
 }
-
 
 hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
   nh = length(path_values);
@@ -120,64 +138,61 @@ hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
   bs=bscallprice(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
   
   nShortedStocks = bs$delta[1];
-  hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,tc=tc)
+  hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
   
   for ( i in seq (2,nh) ) {
     dS= path_values[i] - path_values[i-1];
+    #nShort=num_stocks_to_short_deltas(tc=tc,underlying_price=path_values[i],delta=bs$delta[i-1],nxtdelta=bs$delta[i],nShortedStocks=nShortedStocks,dS=dS);
+    print(paste("nShortedStocks=",nShortedStocks))
     nShort=num_stocks_to_short_zerodp_g(tc=tc,amivest=at,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
+    print(paste("Before: nShort=",nShort,"nShortedStocks=",nShortedStocks))
     nShortedStocks = nShortedStocks + nShort;
-    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,tc=tc);
+    print(paste("After: nShort=",nShort,"nShortedStocks=",nShortedStocks))
+    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+    #   #print(paste("price=",bs$price,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
+    #readline();
   }
   return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
 }
 
-
-
-
-num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nShortedStocks,dS){
-  # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
-  numerator=(delta-nShortedStocks)*dS
-  if (numerator>0){       denominator=underlying_price+tc # always +ve
-                          return (numerator/denominator)
-  } else {
-    denominator=underlying_price-tc # for -ve return values
-    if (denominator>0){
-      return(numerator/denominator); # -ve return value
-    } else {
-      print("Error: invalid hedge parameters");
-      return (0); # do nothing
-    }
-  }
-  #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
+show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
+  plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(t)),ylim=c(-2,3));
+  cl<-rainbow(3);
+  lines(t,notc_deltas,col=cl[1],lty=1)
+  lines(t,notc_hedged_pos/max(abs(notc_hedged_pos)),col=cl[2],lty=2);
+  lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[3],lty=3);
+  legend(1,3,c("delta","hedged pos (normalized-noTC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3));
 }
 
-##########################################
 
+##########################################
 
 display<- function(S_0,K,r_f,vol,at,tc,dt,T){
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
-    
+  
   path = generate_path(S_0,r_f,vol,dt,T);
   hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
   hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
-    
+  
   show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
-    
+  
 }
 
 shinyServer(
   function(input, output) {
-    output$data  <- renderPlot( 
-                      expr=display(S_0=input$S_0,
-                                   K=input$K,
-                                   r_f=input$r_f,
-                                   vol=input$vol,
-                                   dt=input$dt,
-                                   at=input$at,
-                                   tc=input$tc,
-                                   T=input$T)
-                       )
+    output$data  <- renderPlot(
+      expr=display(S_0=input$S_0,
+                   K=input$K,
+                   r_f=input$r_f,
+                   vol=input$vol,
+                   dt=input$dt,
+                   at=input$at,
+                   tc=input$tc,
+                   T=input$T
+      ))
+    
+    output$num_pressed<- renderText(input$run);
   }
 )
