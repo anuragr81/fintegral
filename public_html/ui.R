@@ -31,10 +31,11 @@ shinyUI(
                      min = 0, max = 1, value = .05, step=.01)
          
          ),
-       mainPanel(plotOutput("data"),textOutput("num_pressed"))
+       mainPanel(plotOutput("data"))
        
     )
   )
+
 if (FALSE){
 shinyUI(fluidPage(
   titlePanel("PNL Hedging"),
