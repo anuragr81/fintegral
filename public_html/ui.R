@@ -6,7 +6,7 @@ shinyUI(
        headerPanel("PNL Hedging"),
        sidebarPanel(
          actionButton("run", label = "Re-run"),
-         
+         # Add New Line/ Horizontal Bar
          numericInput("S_0", "Current Underlying Price",
                       100, min = 0, max = 1000, step = .01),
          numericInput("K", "Strike Price",
@@ -15,7 +15,8 @@ shinyUI(
                       10, min = 0, max = 100, step = .01),
          numericInput("at", "Amivest Ratio",
                       .5, min = 0, max = 100, step = .01),
-         numericInput("tc", "Transaction costs (fraction)",
+         numericInput("tc", "Transa
+                      ction costs (fraction)",
                       1, min = 0, max = 100, step = .01),
          
          sliderInput("vol", 
