@@ -195,7 +195,10 @@ show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
 
 ##########################################
 
-display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate){
+display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate,option_type){
+  if (option_type==0){
+    
+  
   if (rerun>=0){
   nh=T/dt;
   vec_r_f=rep(r_f,nh);
@@ -205,7 +208,7 @@ display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate){
   path = generate_path(S_0,r_f,vol,dt,T);
   hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
   hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
-  par(mfrow=c(2,1));
+  par(mfrow=c(1,2));
   plot(path$t,xlab="Time",path$values,ylab="Underlying Price",type='l');
   show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
   } else{
@@ -219,8 +222,12 @@ display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate){
       stdev[k]=sd(pos_k$hedged_pos)
       mean_k[k]=mean(pos_k$hedged_pos)
     }
+    par(mfrow=c(1,2));
     hist(stdev);
+    hist(mean_k);
   }
+  }
+  
 }
 
 }
@@ -239,7 +246,8 @@ shinyServer(
                    tc=input$tc,
                    T=input$T,
                    rerun=input$run,
-                   calculate=input$calculate
+                   calculate=input$calculate,
+                   option_type=input$option_type
       ))
     #output$path <-renderPlot()
     
