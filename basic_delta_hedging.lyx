@@ -85,9 +85,18 @@ A simple portfolio with long one option and short
  in the portfolio and the short position in stock would become more negative.
  A delta neutral strategy applied on the portfolio would imply selling some
  stock (i.e.
- increasing short position).
+ increasing number of stocks 
+\begin_inset Formula $n$
+\end_inset
+
+).
  Similarly, if the stock price decreases, the call option price would decrease
- and delta strategy would imply buying some stock (reducing short position).
+ and delta strategy would imply buying some stock (decreasing number of
+ stocks 
+\begin_inset Formula $n$
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
@@ -131,7 +140,7 @@ Therefore, change in position is:
 \paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{equation}
-P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Rightarrow x=\frac{{\Delta P-n\Delta S}}{S_{t}}
+\Delta PNL=P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Rightarrow x=\frac{{\Delta P-n\Delta S}}{S_{t}}
 \end{equation}
 
 \end_inset
@@ -141,17 +150,17 @@ P_{t}-P_{0}-n(S_{t}-S_{0})-xS_{t}=0\Rightarrow\Delta P-n\Delta S-xS_{t}=0\Righta
 
 \begin_layout Standard
 \paragraph_spacing onehalf
-The purpose is not to keep the portfolio locally-delta-hedged (which would
- be equivalent to adjusting the portfolio according to the new delta of
- the option (i.e.
+Note that the purpose of this exercise is not to keep the portfolio locally-delt
+a-hedged (which would be equivalent to adjusting the portfolio according
+ to the new delta of the option (i.e.
  
 \begin_inset Formula $n+x=\frac{{\partial P}}{\partial S})$
 \end_inset
 
 .
- The goal instead is to minimize the PNL volatility i.e.
- keep the change in PNL closest to zero as possible for small changes in
- 
+ The goal instead is to minimize the PNL volatility - this is being done
+ by keeping the change in PNL closest to zero as possible for small changes
+ in 
 \begin_inset Formula $P$
 \end_inset
 
@@ -164,7 +173,11 @@ The purpose is not to keep the portfolio locally-delta-hedged (which would
 \begin_inset Formula $n$
 \end_inset
 
- to minimize the above PNL change.
+ to minimize the above PNL change 
+\begin_inset Formula $(\Delta PNL)$
+\end_inset
+
+.
  For small changes, the first-order approximation can work (
 \begin_inset Formula $\delta_{0}=\Delta P/\Delta S$
 \end_inset
@@ -197,7 +210,7 @@ Setting above to zero gives us
 \end_inset
 
 .
- In this case of linear approximation, nothing needs to be done if 
+ For linear approximation, nothing needs to be done if 
 \begin_inset Formula $n=\delta_{0}.$
 \end_inset
 
@@ -272,8 +285,8 @@ It is a bit like a tailor who has been paid in advance for a suit to be
  only make guesses based on past measurements.
  If the customer's son grows really tall in a single year, the tailor would
  be quite inaccurate about the size of the suit.
- The higher is the volatility of the teen's height, after all, the more
- frequently would the suit need to be measured.
+ The higher is the volatility of the teen's height, the more frequently
+ would the suit need to be measured.
  One year can be too long for the 
 \begin_inset Quotes eld
 \end_inset
@@ -288,8 +301,8 @@ rebalancing
 
 \begin_layout Standard
 \paragraph_spacing onehalf
-Of course, such a problem would not exist if the tailor knew how much the
- teen is going to grow in the next year.
+Such problems won't exist if the tailor knew how much the teen is going
+ to grow in the next year.
  In our simulations, we could estimate 
 \begin_inset Formula $x$
 \end_inset
@@ -318,7 +331,7 @@ x=\frac{{(P_{t}-P_{0})-n\cdot(\Delta S)}}{S_{t}}
 \begin_layout Standard
 \paragraph_spacing onehalf
 The assumption that we have apriori knowledge price of options and stocks
- at the rebalancing points is indeed not a realistic one.
+ at the rebalancing points is not a realistic one.
  A real-world delta-strategy would aim to solve the equation by predicting
  the close-to market values of 
 \begin_inset Formula $\int dS$
@@ -417,7 +430,7 @@ If
 \end_inset
 
  (i.e.
- we're shorting more shares), 
+ we're shorting more shares),
 \end_layout
 
 \begin_layout Standard
@@ -465,12 +478,13 @@ Here the approximation
 status open
 
 \begin_layout Plain Layout
-Notice that the fluctuations in the 
+Notice that the fluctuations in 
 \begin_inset Formula $x$
 \end_inset
 
- are higher than the no-transaction costs case and thus, the net PNL would
- be far more sensitive to the hedge-frequency (i.e.
+ (number of traded shares) would be higher with transaction costs than without
+ transaction costs case and therefore, the net PNL should be more sensitive
+ to hedge-frequency (i.e.
  the time when 
 \begin_inset Formula $x$
 \end_inset
@@ -668,6 +682,12 @@ If
 \noun default
 \color inherit
  
+\end_layout
+
+\begin_layout Standard
+Even with the generalized case, a very limiting assumption of ours is the
+ ability to trade in fractions.
+ The simulation should only trade in unit volumes.
 \end_layout
 
 \begin_layout Section
