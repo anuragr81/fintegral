@@ -80,30 +80,50 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShor
     }  
   }
   #D1>0 and D2>0
-  xO1=(B2+sqrt(D2))/A
-  xO2=(B2-sqrt(D2))/A
-  xT1=(B1+sqrt(D1))/A
+  sol1=0
+  xO1=(B2+sqrt(D2))/A # select(xO1,xO2) <0
+  xO2=(B2-sqrt(D2))/A # 
+  if (xO1<=0) {
+    if (xO2<=0){
+      sol1=max(xO1,xO2);
+    }else {
+      sol1=xO1;
+    }
+  } else {
+    if (xO2 <=0 ){
+      sol1=xO2
+    }
+  }
+  sol2=0;
+  xT1=(B1+sqrt(D1))/A # select (xT1,xT2)> 0
   xT2=(B1-sqrt(D1))/A
-  #print(paste("xO1=",xO1,"xO2=",xO2,"xT1=",xT1,"xT2=",xT2))
-  sols=c(xO1,xO2,xT1,xT2)
-  positives=sols[sols>=0]
-  negatives=sols[sols<=0]
-  if (length(positives)==0) {
-    return (max(negatives));
-  } 
-  if (length(negatives)==0){
-    return(min(positives))
-  }
-  if (min(positives) < min(abs(negatives)))
-  { 
-    return(min(positives))
-  }
-  else {
-    return(max(negatives))
+  if (xT1>=0){
+    if (xT2>=0){
+      sol2=min(xT1,xT2);
+    } else {
+      sol2=xT1;
+    }
+  } else {
+    if (xT2>=0){
+      sol2=xT2;
+    }
   }
   
+  if (sol1==0){
+    return (sol2);
+  } 
+  if (sol2==0){
+    return(sol1);
+  }
+  
+  if (abs(sol1)>abs(sol2)){
+    return(sol2);
+  } else {
+    return(sol1);
+  }
+  #print(paste("xO1=",xO1,"xO2=",xO2,"xT1=",xT1,"xT2=",xT2))
+  
 }
-
 num_stocks_to_short_deltas <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
   return(nxtdelta-delta);
 }
@@ -196,40 +216,53 @@ show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
 ##########################################
 
 display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate,option_type){
-  if (option_type==0){
-    
   
   if (rerun>=0){
-  nh=T/dt;
-  vec_r_f=rep(r_f,nh);
-  vec_vol=rep(vol,nh);
-  
-  if (calculate==0){
-  path = generate_path(S_0,r_f,vol,dt,T);
-  hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
-  hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
-  par(mfrow=c(1,2));
-  plot(path$t,xlab="Time",path$values,ylab="Underlying Price",type='l');
-  show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
-  } else{
     
-    stdev=array();
-    mean_k=array();
-    
-    for ( k in seq(500)){
+    if (option_type==0){
+      
+      nh=T/dt;
+      vec_r_f=rep(r_f,nh);
+      vec_vol=rep(vol,nh);
+      
+      if (calculate==0){
+        
+        path = generate_path(S_0,r_f,vol,dt,T);
+        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
+        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
+        par(mfrow=c(1,2));
+        plot(path$t,xlab="Time",path$values,ylab="Underlying Price",type='l');
+        show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos);
+        
+      } else{
+        
+        stdev=array();
+        mean_k=array();
+        
+        for ( k in seq(500)){
+          path = generate_path(S_0,r_f,vol,dt,T);
+          pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
+          stdev[k]=sd(pos_k$hedged_pos)
+          mean_k[k]=mean(pos_k$hedged_pos)
+        }
+        par(mfrow=c(1,2));
+        hist(stdev);
+        hist(mean_k);
+      } # {end: calcualte}
+    } # {end: optionType}
+    if (option_type==1){
       path = generate_path(S_0,r_f,vol,dt,T);
-      pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
-      stdev[k]=sd(pos_k$hedged_pos)
-      mean_k[k]=mean(pos_k$hedged_pos)
-    }
-    par(mfrow=c(1,2));
-    hist(stdev);
-    hist(mean_k);
-  }
-  }
+      hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
+      hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
+      par(mfrow=c(1,2));
+      plot(path$t,xlab="Time",path$values,ylab="Underlying Price",type='l');
+      show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos);
+      
+    }   # {end: optionType}
+    
+    
+  } # {end: rerun}
   
-}
-
 }
 
 
