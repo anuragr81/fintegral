@@ -7,12 +7,12 @@ source("bspricers.r")
 source("hedgesteps.r")
 source("display.r")
 
-hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
+hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at,pricerFunc) {
   isPrint=FALSE;
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
-  bs=bscallprice(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
+  bs=pricerFunc(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
   
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
@@ -78,14 +78,14 @@ simul <- function(calculate){
     if (calculate==0){
     # could be replaced with an IR model
         path = generate_path(S_0,r_f,vol,dt,T);
-        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at);
-        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
+        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at,pricerFunc=bscallprice);
+        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at,pricerFunc=bscallprice);
 
         show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
     } else {
         for ( k in seq(500)){
             path = generate_path(S_0,r_f,vol,dt,T);
-            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at);
+            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at,pricerFunc=bscallprice);
             out[k]=sd(pos_k$hedged_pos)
 	    mean_k[k]=mean(pos_k$hedged_pos)
         }
