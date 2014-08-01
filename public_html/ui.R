@@ -5,6 +5,7 @@ shinyUI(
   pageWithSidebar(
        headerPanel("PNL Hedging"),
        sidebarPanel(
+         checkboxInput('calculate', 'Histogram'),
          actionButton("run", label = "Re-run"),
          # Add New Line/ Horizontal Bar
          numericInput("S_0", "Current Underlying Price",
