@@ -4,15 +4,21 @@
 # Reiner & Rubinstein Barrier Paper
 
 source("bspricers.r")
+source("barrierpricers.r")
 source("hedgesteps.r")
 source("display.r")
 
-hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at,pricerFunc) {
+hedged_position <- function (path_t,path_values,tc,at,pricerFunc,pricerArgs) {
   isPrint=FALSE;
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
-  bs=pricerFunc(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
+  #r_f,vol,T,K
+  bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
+  par(mfrow=c(2,2));
+  
+  plot(path_t,path_values,type='l')
+  plot(path_t,bs$price,type='l')
   
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
@@ -59,7 +65,7 @@ test <- function(K) {
   plot(S_0,v$gamma); #,S_0,v$delta,S_0,v$gamma);
 }
 
-simul <- function(calculate){
+simul <- function(calculate,optionType){
     S_0=50;
     vol=.4;
     dt=.01;
@@ -68,24 +74,34 @@ simul <- function(calculate){
     r_f=.05;
     tc=.2;
     at=1;
+    B=40;
 
     nh=T/dt;
     vec_r_f=rep(r_f,nh)
     vec_vol=rep(vol,nh)
     out=array();
     mean_k=array();
+    if (optionType==1){
+      pricer_func=bscallprice;
+      pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
+    }else{
+      pricer_func=downandout_callprice;
+      pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B)
+    }
 
     if (calculate==0){
     # could be replaced with an IR model
         path = generate_path(S_0,r_f,vol,dt,T);
-        hp_notc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=0,at=at,pricerFunc=bscallprice);
-        hp_tc=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at,pricerFunc=bscallprice);
+        
+        hp_notc=hedged_position(path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+        hp_tc=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
 
         show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
     } else {
         for ( k in seq(500)){
             path = generate_path(S_0,r_f,vol,dt,T);
-            pos_k=hedged_position(path_t=path$t,path_values=path$values,r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,tc=tc,at=at,pricerFunc=bscallprice);
+            pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+            
             out[k]=sd(pos_k$hedged_pos)
 	    mean_k[k]=mean(pos_k$hedged_pos)
         }
