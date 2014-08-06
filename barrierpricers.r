@@ -29,19 +29,25 @@ value_downandout <- function (npaths,S_0,K,B,r_f,vol,dt,T) {
   
 }
 
-value_downandout_exp <- function(S_0,K,B,r_f,vol,t,T) {
-cbs=bscallprice(S_0=S_0,K=K,r_f=r_f,vol=vol,t=t,T);
-cbsi=bscallprice(S_0=(B*B/S_0),K=K,r_f=r_f,vol=vol,t=t,T=T);
-n1=cbs$price
-n2=((S_0/B)^(1-(2*r_f/(vol*vol)))*cbsi$price)
-return(n1-n2);
-#ts.plot(S_0,ts((S_0[1]^2)/S_0)) # <-- beauty
-
+value_downandout_exp <- function(S_0,t,pricerArgs) {
+  r_f=pricerArgs$r_f;
+  vol=pricerArgs$vol;
+  B=pricerArgs$B;
+  
+  cbs=bscallprice(S_0=S_0,t=t,pricerArgs=pricerArgs);
+  cbsi=bscallprice(S_0=(B*B/S_0),t=t,pricerArgs=pricerArgs);
+  n1=cbs$price;
+  n2=((S_0/B)^(1-(2*r_f/(vol*vol)))*cbsi$price)
+  return(n1-n2);
+  #ts.plot(S_0,ts((S_0[1]^2)/S_0)) # <-- beauty
+  
 }
 
-delta_downandout_exp <-function(S_0,K,B,r_f,vol,dt,T){
-   cbs=value_downandout_exp(S_0=S_0,K=K,B=B,r_f=r_f,vol=vol,dt=dt,T=T)
-   dS=.001;
-   cbsnext=value_downandout_exp(S_0=S_0+dS,K=K,B=B,r_f=r_f,vol=vol,dt=dt,T=T)
-   return ((cbsnext$price-cbs$price)/dS)
+downandout_callprice <-function(S_0,t,pricerArgs){
+  tol=pricerArgs$tol;
+  cbs=value_downandout_exp(S_0=S_0,t=t,pricerArgs=pricerArgs);
+  dS=tol;
+  cbsnext=value_downandout_exp(S_0=S_0+dS,t=t,pricerArgs=pricerArgs)
+  delta=((cbsnext-cbs)/dS);
+  return(data.frame(price=cbs,delta=delta));
 }
