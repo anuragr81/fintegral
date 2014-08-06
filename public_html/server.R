@@ -162,15 +162,12 @@ bscallprice <- function(S_0,K,r_f,vol,t,T){
 
 
 
-
-
-
-hedged_position <- function (path_t,path_values,r_f,vol,dt,T,K,tc,at) {
+hedged_position <- function (path_t,path_values,pric,tc,at) {
   isPrint=FALSE;
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
-  bs=bscallprice(S_0=path_values,K=K,r_f=r_f,vol=vol,t=path_t,T);
+  bs=bscallprice(S_0=path_values,t=path_t,pricerArgs);
   
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
@@ -219,11 +216,11 @@ display<- function(S_0,K,r_f,vol,at,tc,dt,T,rerun,calculate,option_type){
   
   if (rerun>=0){
     
+    nh=T/dt;
+    vec_r_f=rep(r_f,nh);
+    vec_vol=rep(vol,nh);
+    
     if (option_type==0){
-      
-      nh=T/dt;
-      vec_r_f=rep(r_f,nh);
-      vec_vol=rep(vol,nh);
       
       if (calculate==0){
         
