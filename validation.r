@@ -13,17 +13,15 @@ hedged_position <- function (path_t,path_values,tc,at,pricerFunc,pricerArgs) {
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
-  #r_f,vol,T,K
   bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
-  par(mfrow=c(2,2));
+  #par(mfrow=c(2,2));
   
   plot(path_t,path_values,type='l')
   plot(path_t,bs$price,type='l')
   
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
-
-
+  
   if (isPrint){
     print(paste("hedged_pos[1]=",hedged_pos[1]));
   }
@@ -35,16 +33,16 @@ hedged_position <- function (path_t,path_values,tc,at,pricerFunc,pricerArgs) {
     }
     nShort=num_stocks_to_short_zerodp_g(tc=tc,amivest=at,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
     if (isPrint){
-       print(paste("Before: nShort(to short)=",nShort,"nShortedStocks=",nShortedStocks))
+      print(paste("Before: nShort(to short)=",nShort,"nShortedStocks=",nShortedStocks))
     }
     nShortedStocks = nShortedStocks + nShort;
     if (isPrint){
-       print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
+      print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
     }
     hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
     if (isPrint){
-        print(paste("hedged_pos[",i,"]=",hedged_pos[i]));
-        print(paste("price=",bs$price[i],"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
+      print(paste("hedged_pos[",i,"]=",hedged_pos[i]));
+      print(paste("price=",bs$price[i],"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
     }
   }
   return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
@@ -66,125 +64,125 @@ test <- function(K) {
 }
 
 simul <- function(calculate,optionType){
-    S_0=50;
-    vol=.4;
-    dt=.01;
-    T=1;
-    K=50;
-    r_f=.05;
-    tc=.2;
-    at=1;
-    B=40;
-
-    nh=T/dt;
-    vec_r_f=rep(r_f,nh)
-    vec_vol=rep(vol,nh)
-    out=array();
-    mean_k=array();
-    if (optionType==1){
-      pricer_func=bscallprice;
-      pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
-    }else{
-      pricer_func=downandout_callprice;
-      pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B)
-    }
-
-    if (calculate==0){
+  S_0=50;
+  vol=.4;
+  dt=.01;
+  T=1;
+  K=50;
+  r_f=.05;
+  tc=.2;
+  at=1;
+  B=40;
+  
+  nh=T/dt;
+  vec_r_f=rep(r_f,nh)
+  vec_vol=rep(vol,nh)
+  out=array();
+  mean_k=array();
+  if (optionType==1){
+    pricer_func=bscallprice;
+    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
+  }else{
+    pricer_func=downandout_callprice;
+    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B)
+  }
+  
+  if (calculate==0){
     # could be replaced with an IR model
-        path = generate_path(S_0,r_f,vol,dt,T);
-        
-        hp_notc=hedged_position(path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
-        hp_tc=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
-
-        show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
-    } else {
-        for ( k in seq(500)){
-            path = generate_path(S_0,r_f,vol,dt,T);
-            pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
-            
-            out[k]=sd(pos_k$hedged_pos)
-	    mean_k[k]=mean(pos_k$hedged_pos)
-        }
-        #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
-        #cat(out);
-        #sink();
-        #print(out);
-        print(paste("Average PNL:",mean(mean_k)))
-        #hist(out); 
-        print(paste("mean-stdev(PNL):",mean(out)));
+    path = generate_path(S_0,r_f,vol,dt,T);
+    
+    hp_notc=hedged_position(path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+    hp_tc=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+    
+    show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
+  } else {
+    for ( k in seq(500)){
+      path = generate_path(S_0,r_f,vol,dt,T);
+      pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+      
+      out[k]=sd(pos_k$hedged_pos)
+      mean_k[k]=mean(pos_k$hedged_pos)
     }
+    #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
+    #cat(out);
+    #sink();
+    #print(out);
+    print(paste("Average PNL:",mean(mean_k)))
+    #hist(out); 
+    print(paste("mean-stdev(PNL):",mean(out)));
+  }
 }
 
 
 testBarrier<- function(){
-S_0=100;
-K=80;
-B=89;
-r_f=.05;
-vol=.3;
-T=1;
-dt=.01;
-nh=T/dt
-#t=seq(0:(nh-1))*dt
-t=rep(0,nh)
-path = generate_path(S_0,r_f,vol,dt,T);
-#S_t=path$values
-S_t=2*(S_0)*seq(1:nh)/nh
-
-cb=value_downandout_exp(S_0=S_t,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
-
-c=bscallprice(S_0=S_t,K=K,r_f=r_f,vol=vol,t=t,T);
-dS=.001
-cbn=value_downandout_exp(S_0=S_t+dS,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
-delta=(cbn-cb)/dS
-show_barrier_opt_wrt_stock(S_t,c$price,c$delta,doutprice=cb,doutdelta=delta)
-
+  S_0=100;
+  K=80;
+  B=89;
+  r_f=.05;
+  vol=.3;
+  T=1;
+  dt=.01;
+  nh=T/dt
+  #t=seq(0:(nh-1))*dt
+  t=rep(0,nh)
+  path = generate_path(S_0,r_f,vol,dt,T);
+  #S_t=path$values
+  S_t=2*(S_0)*seq(1:nh)/nh
+  
+  cb=value_downandout_exp(S_0=S_t,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+  
+  c=bscallprice(S_0=S_t,K=K,r_f=r_f,vol=vol,t=t,T);
+  dS=.001
+  cbn=value_downandout_exp(S_0=S_t+dS,K=rep(K,nh),B=rep(B,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=t,T=rep(T,nh));
+  delta=(cbn-cb)/dS
+  show_barrier_opt_wrt_stock(S_t,c$price,c$delta,doutprice=cb,doutdelta=delta)
+  
 }
 
 testBSStock <- function() {
-S_0=100
-r_f=.1
-vol=.5
-dt=.01
-T=3
-K=70
-path = generate_path(S_0,r_f,vol,dt,T);
-nh=T/dt
-start=0
-end=2
-df=(end-start)/nh
-volvec=seq(start,end-df,df)
-S_t=2*S_0*(1+seq(1:nh))/nh;
-bs = bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=rep(0,nh),T=rep(T,nh));
-plot(0,0,xlab="Stock", ylab="", xlim=c(0,max(S_t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
-cl<-rainbow(2);
-lines(S_t,bs$delta,col=cl[1],lty=1)
-lines(S_t,bs$price/K,col=cl[2],lty=2);
-legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
-
+  S_0=100
+  r_f=.1
+  vol=.5
+  dt=.01
+  T=3
+  K=70
+  path = generate_path(S_0,r_f,vol,dt,T);
+  nh=T/dt
+  start=0
+  end=2
+  df=(end-start)/nh
+  volvec=seq(start,end-df,df)
+  S_t=2*S_0*(1+seq(1:nh))/nh;
+  bs = bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=rep(0,nh),T=rep(T,nh));
+  plot(0,0,xlab="Stock", ylab="", xlim=c(0,max(S_t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
+  cl<-rainbow(2);
+  lines(S_t,bs$delta,col=cl[1],lty=1)
+  lines(S_t,bs$price/K,col=cl[2],lty=2);
+  legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
+  
 }
 testBS <- function(){
-# observations: 
-# in the money option-deltas come close to unity as time to maturity approaches (and stock-price remains same). This is because the payoff from stock is the same as the option (weight unity in the tracking portfolio).
-# out of the money option-deltas come close to zero as time to maturity approaches (and stock-price remains constant). This is because owning a stock (delta) pays nothing. 
-
-S_0=100
-r_f=.1
-vol=.5
-dt=.01
-T=3
-K=110
-path = generate_path(S_0,r_f,vol,dt,T);
-nh=T/dt
-start=0
-end=2
-df=(end-start)/nh
-volvec=seq(start,end-df,df)
-bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
-plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
-cl<-rainbow(2);
-lines(path$t,bs$delta,col=cl[1],lty=1)
-lines(path$t,bs$price/K,col=cl[2],lty=2);
-legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
-
+  # observations: 
+  # in the money option-deltas come close to unity as time to maturity approaches (and stock-price remains same). This is because the payoff from stock is the same as the option (weight unity in the tracking portfolio).
+  # out of the money option-deltas come close to zero as time to maturity approaches (and stock-price remains constant). This is because owning a stock (delta) pays nothing. 
+  
+  S_0=100
+  r_f=.1
+  vol=.5
+  dt=.01
+  T=3
+  K=110
+  path = generate_path(S_0,r_f,vol,dt,T);
+  nh=T/dt
+  start=0
+  end=2
+  df=(end-start)/nh
+  volvec=seq(start,end-df,df)
+  bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
+  plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
+  cl<-rainbow(2);
+  lines(path$t,bs$delta,col=cl[1],lty=1)
+  lines(path$t,bs$price/K,col=cl[2],lty=2);
+  legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
+  
 }
