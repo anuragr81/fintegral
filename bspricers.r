@@ -10,15 +10,21 @@ generate_path <- function (S_0,r_f,vol,dt,T){
     return (data.frame(values=values,t=tarray));
 }
 
-bscallprice <- function(S_0,K,r_f,vol,t,T){
+bscallprice <- function(S_0,t,pricerArgs){
+  
+    K=pricerArgs$K;
+    r_f=pricerArgs$r_f;
+    vol=pricerArgs$vol;
+    T=pricerArgs$T;
+    #print(paste("S_0=",S_0,"K=",K,"r_f=",r_f,"T=",T,"t=",t));
     numerator=log(S_0/K) + (r_f+(vol*vol)*0.5)*(T-t);
     denominator=vol*sqrt(T-t);
     d1=(numerator/denominator);
     d2=d1-vol*sqrt(T-t);
-    res=list();
     price=(S_0*pnorm(d1)-K*exp(-r_f*(T-t))*pnorm(d2));
     delta=pnorm(d1);
     gamma=dnorm(d1)/(S_0*vol*sqrt(T-t));
+    
     return (data.frame(price=price,delta=delta,gamma=gamma));
 }
 
