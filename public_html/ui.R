@@ -5,8 +5,12 @@ shinyUI(
   pageWithSidebar(
        headerPanel("PNL Hedging"),
        sidebarPanel(
-         checkboxInput('calculate', 'Histogram'),
          actionButton("run", label = "Re-run"),
+         selectInput("option_type", label = h6("OpionType"), 
+                     choices = list("European Call" = 0, "Down and out Barrier" = 1),
+                     selected = 0),
+         checkboxInput('calculate', 'Histogram'),
+         
          # Add New Line/ Horizontal Bar
          numericInput("S_0", "Current Underlying Price",
                       100, min = 0, max = 1000, step = .01),

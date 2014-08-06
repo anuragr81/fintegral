@@ -76,27 +76,49 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nShor
        }  
     }
     #D1>0 and D2>0
-    xO1=(B2+sqrt(D2))/A
-    xO2=(B2-sqrt(D2))/A
-    xT1=(B1+sqrt(D1))/A
-    xT2=(B1-sqrt(D1))/A
-    #print(paste("xO1=",xO1,"xO2=",xO2,"xT1=",xT1,"xT2=",xT2))
-    sols=c(xO1,xO2,xT1,xT2)
-    positives=sols[sols>=0]
-    negatives=sols[sols<=0]
-    if (length(positives)==0) {
-         return (max(negatives));
-    } 
-    if (length(negatives)==0){
-         return(min(positives))
+    sol1=0
+    xO1=(B2+sqrt(D2))/A # select(xO1,xO2) <0
+    xO2=(B2-sqrt(D2))/A # 
+    if (xO1<=0) {
+      if (xO2<=0){
+       sol1=max(xO1,xO2);
+      }else {
+        sol1=xO1;
+      }
+    } else {
+      if (xO2 <=0 ){
+        sol1=xO2
+      }
     }
-    if (min(positives) < min(abs(negatives)))
-        { 
-            return(min(positives))
-        }
-   else {
-            return(max(negatives))
-        }
+    sol2=0;
+    xT1=(B1+sqrt(D1))/A # select (xT1,xT2)> 0
+    xT2=(B1-sqrt(D1))/A
+    if (xT1>=0){
+      if (xT2>=0){
+        sol2=min(xT1,xT2);
+      } else {
+        sol2=xT1;
+      }
+    } else {
+      if (xT2>=0){
+        sol2=xT2;
+      }
+    }
+    
+    if (sol1==0){
+      return (sol2);
+    } 
+    if (sol2==0){
+      return(sol1);
+    }
+    
+    if (abs(sol1)>abs(sol2)){
+      return(sol2);
+    } else {
+      return(sol1);
+    }
+
+    #print(paste("xO1=",xO1,"xO2=",xO2,"xT1=",xT1,"xT2=",xT2))
     
 }
 
