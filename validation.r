@@ -8,61 +8,6 @@ source("barrierpricers.r")
 source("hedgesteps.r")
 source("display.r")
 
-hedged_position <- function (path_t,path_values,tc,at,pricerFunc,pricerArgs) {
-  isPrint=FALSE;
-  nh = length(path_values);
-  option_prices=array();
-  hedged_pos=array();
-  bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
-  #par(mfrow=c(2,2));
-  
-  plot(path_t,path_values,type='l')
-  plot(path_t,bs$price,type='l')
-  
-  nShortedStocks = bs$delta[1];
-  hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
-  
-  if (isPrint){
-    print(paste("hedged_pos[1]=",hedged_pos[1]));
-  }
-  
-  for ( i in seq (2,nh) ) {
-    dS= path_values[i] - path_values[i-1];
-    if (isPrint){
-      print(paste("dS=",dS,"nShortedStocks=",nShortedStocks))
-    }
-    nShort=num_stocks_to_short_zerodp_g(tc=tc,amivest=at,underlying_price=path_values[i],delta=bs$delta[i-1],nShortedStocks=nShortedStocks,dS=dS);
-    if (isPrint){
-      print(paste("Before: nShort(to short)=",nShort,"nShortedStocks=",nShortedStocks))
-    }
-    nShortedStocks = nShortedStocks + nShort;
-    if (isPrint){
-      print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
-    }
-    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-    if (isPrint){
-      print(paste("hedged_pos[",i,"]=",hedged_pos[i]));
-      print(paste("price=",bs$price[i],"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
-    }
-  }
-  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
-}
-
-test <- function(K) {
-  ds=.1;
-  finS=3*K;
-  veclen=as.integer(finS/ds);
-  S_0=seq(0,finS,ds); S_0=S_0[1:length(S_0)-1];
-  K=rep(K,veclen);
-  #r_f=seq(0,.05,(.05/veclen)); r_f=r_f[1:(length(r_f)-1)];
-  r_f=rep(.05,veclen);
-  vol=rep(.6,veclen);
-  t=rep(0,veclen);
-  T=rep(1,veclen);
-  v=bscallprice(S_0,K,r_f,vol,t,T);
-  plot(S_0,v$gamma); #,S_0,v$delta,S_0,v$gamma);
-}
-
 simul <- function(calculate,optionType){
   S_0=50;
   vol=.4;
@@ -82,26 +27,30 @@ simul <- function(calculate,optionType){
   if (optionType==1){
     pricer_func=bscallprice;
     pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
+    check_args= checkargs_bscallpricer;
   }else{
     pricer_func=downandout_callprice;
-    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B)
+    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B,tol=.001)
+    check_args = checkargs_downandout_callpricer;
   }
   
   if (calculate==0){
     # could be replaced with an IR model
     path = generate_path(S_0,r_f,vol,dt,T);
-    
-    hp_notc=hedged_position(path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
-    hp_tc=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
-    
-    show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos)
+    hp_notcdelta=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+
+    hp_notc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,path_t=path$t,path_values=path$values,tc=0,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+
+    hp_tc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
+
+    show_deltas (t=hp_notc$t,notc_deltas=hp_notc$deltas,notc_hedged_pos=hp_notc$hedged_pos,tc_deltas=hp_tc$deltas,tc_hedged_pos=hp_tc$hedged_pos);
   } else {
     for ( k in seq(500)){
       path = generate_path(S_0,r_f,vol,dt,T);
       pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args);
       
-      out[k]=sd(pos_k$hedged_pos)
-      mean_k[k]=mean(pos_k$hedged_pos)
+      out[k]=sd(pos_k$hedged_pos);
+      mean_k[k]=mean(pos_k$hedged_pos);
     }
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
     #cat(out);
@@ -111,6 +60,21 @@ simul <- function(calculate,optionType){
     #hist(out); 
     print(paste("mean-stdev(PNL):",mean(out)));
   }
+}
+
+test <- function(K) {
+  ds=.1;
+  finS=3*K;
+  veclen=as.integer(finS/ds);
+  S_0=seq(0,finS,ds); S_0=S_0[1:length(S_0)-1];
+  K=rep(K,veclen);
+  #r_f=seq(0,.05,(.05/veclen)); r_f=r_f[1:(length(r_f)-1)];
+  r_f=rep(.05,veclen);
+  vol=rep(.6,veclen);
+  t=rep(0,veclen);
+  T=rep(1,veclen);
+  v=bscallprice(S_0,K,r_f,vol,t,T);
+  plot(S_0,v$gamma); #,S_0,v$delta,S_0,v$gamma);
 }
 
 
