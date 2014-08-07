@@ -43,6 +43,25 @@ value_downandout_exp <- function(S_0,t,pricerArgs) {
   
 }
 
+checkargs_downandout_callpricer<- function(pricerArgs){
+  if(pricerArgs$tol<=0 && pricerArgs$tol<=1 ){
+    return(FALSE);
+  }
+  if (min(pricerArgs$K)<=0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$r_f)<0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$vol)<0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$T)<=0){
+    return(FALSE);
+  }  
+  return(TRUE);
+}
+
 downandout_callprice <-function(S_0,t,pricerArgs){
   tol=pricerArgs$tol;
   cbs=value_downandout_exp(S_0=S_0,t=t,pricerArgs=pricerArgs);
