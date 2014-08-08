@@ -9,7 +9,7 @@ source("hedgesteps.r")
 source("display.r")
 
 simul <- function(calculate,optionType){
-  S_0=50;
+  S_0=100;
   vol=.4;
   dt=.01;
   T=10;
@@ -18,7 +18,7 @@ simul <- function(calculate,optionType){
   tc=1;
   at=0;
   B=40;
-  minsz=.001;
+  minsz=.1;
   mindelta=3;
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
@@ -67,17 +67,22 @@ simul <- function(calculate,optionType){
                             tc=0,at=at,
                             pricerFunc=pricer_func,pricerArgs=pricer_args,
                             minTradesize=minsz,maxTradedelta=mindelta);
-    
-    #    hp_tc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args,minTradesize=minsz,maxTradedelta=mindelta);
-    
+        
     show_deltas (t=hp_notc$t,
+                 path_values=path$values,
                  notc_deltas=hp_notc$deltas,
                  notc_hedged_pos=hp_notc$hedged_pos,
                  tc_hedged_pos=hp_notcdeltamethod$hedged_pos);
   } else {
     for ( k in seq(500)){
       path = generate_path(S_0,r_f,vol,dt,T);
-      pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,checkArgs=check_args,pricerFunc=pricer_func,pricerArgs=pricer_args);
+      hp_notcdeltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
+                                         path_t=path$t,path_values=path$values,
+                                         tc=0,at=at,
+                                         pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                         minTradesize=minsz,maxTradedelta=mindelta);
+      
+      #pos_k=hedged_position(path_t=path$t,path_values=path$values,tc=tc,at=at,checkArgs=check_args,pricerFunc=pricer_func,pricerArgs=pricer_args);
       
       out[k]=sd(pos_k$hedged_pos);
       mean_k[k]=mean(pos_k$hedged_pos);
