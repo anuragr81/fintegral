@@ -1,11 +1,11 @@
 
-show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_deltas,tc_hedged_pos) {
+show_deltas <- function(t,notc_deltas,notc_hedged_pos,tc_hedged_pos) {
     plot(0,0,xlab="Time", ylab="Delta, HedgedPosition(normalized)", xlim=c(0,max(t)),ylim=c(-2,3));
-    cl<-rainbow(2);
+    cl<-rainbow(3);
     lines(t,notc_deltas,col=cl[1],lty=1)
     lines(t,notc_hedged_pos/max(abs(notc_hedged_pos)),col=cl[2],lty=2);
     lines(t,tc_hedged_pos/max(abs(tc_hedged_pos)),col=cl[3],lty=3);
-    legend(1,3,c("delta","hedged pos (normalized-noTC)","hedged pos(normalized-TC)"),col=cl, lty=c(1,2,3,4));
+    legend(.4*max(t),3,c("delta","hedged pos (regular)","hedged pos(special)"),col=cl, lty=c(1,2,3,4));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
