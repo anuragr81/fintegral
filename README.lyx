@@ -60,6 +60,141 @@
 \begin_body
 
 \begin_layout Section
+Hedge Portfolio and Black Scholes
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+Self-financing means the value 
+\begin_inset Formula $V=\alpha B+\Delta S$
+\end_inset
+
+ cannot be changed except by changing weights 
+\begin_inset Formula $\alpha,\Delta$
+\end_inset
+
+.
+ Thus if we modify 
+\begin_inset Formula $\alpha,\Delta$
+\end_inset
+
+ according to Black-scholes at every time-step, then our average cost (deviation
+ from the starting PNL) would correspond to the price of the option.
+ 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\begin_inset Formula $dV=\alpha dB+\Delta dS=\alpha rBdt+\Delta(\mu Sdt+\sigma SdW)\Rightarrow$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+dV & = & (\alpha rB+\mu\Delta S)dt+\sigma\Delta SdW
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $dV=\frac{{\partial V}}{\partial t}dt+\frac{{\partial V}}{\partial S}dS+\frac{{1}}{2}\frac{{\partial^{2}V}}{\partial S^{2}}dS^{2}=\frac{\partial V}{\partial t}dt+\frac{\partial V}{\partial S}(\mu Sdt+\sigma SdW)+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2}dt$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\begin_inset Formula 
+\begin{eqnarray}
+dV & = & (\frac{\partial V}{\partial t}+\mu S\frac{\partial V}{\partial S}+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2})dt+\sigma S\frac{\partial V}{\partial S}dW
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+Equating (1) and (2): 
+\begin_inset Formula $\alpha=\frac{{V_{t}+V_{SS}\sigma^{2}S^{2}}}{rB}$
+\end_inset
+
+.
+ We also know that 
+\begin_inset Formula $rV=r\alpha B+r\Delta S\Rightarrow$
+\end_inset
+
+
+\begin_inset Formula $rV=V_{t}+V_{SS}\sigma^{2}S^{2}+rSV_{S}$
+\end_inset
+
+.
+ This is the Black Scholes equation.
+\end_layout
+
+\begin_layout Standard
+The same derivation with hedge portfolio considers 
+\begin_inset Formula $d\Pi=dV-\Delta S$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+\begin_inset Formula $dV$
+\end_inset
+
+ in (1) is the PNL that we are trying to achieve with the simulation.
+ At every step, we can adjust the cash account as:
+\begin_inset Formula $\alpha_{t}=\frac{V_{t}-\Delta_{t}S_{t}}{B_{t}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The hedge-portfolio way of deriving Black-Scholes involves using evolution
+ of hedge-portfolio value itself i.e.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+d\Pi_{t} & = & \Pi_{t}rdt
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using (2),
+\begin_inset Formula $d\Pi=dV-\Delta dS=(\frac{\partial V}{\partial t}+\mu S(\frac{\partial V}{\partial S}-\Delta)+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2})dt+(\sigma S\frac{\partial V}{\partial S}-\Delta)dW$
+\end_inset
+
+.
+ Setting the local risk-lessness implies that 
+\begin_inset Formula $\Delta=\frac{\partial V}{\partial S}$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $d\Pi=\Pi rdt\Rightarrow(V-\frac{\partial V}{\partial S}S)r=\frac{\partial V}{\partial t}+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2}$
+\end_inset
+
+which is the Black-Scholes equation.
+ While simulating this, we ensure that local risk-lessness is implemented.
+\end_layout
+
+\begin_layout Section
 Order Book Liquidity
 \end_layout
 
