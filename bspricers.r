@@ -11,9 +11,6 @@ generate_path <- function (S_0,r_f,vol,dt,T){
 }
 
 checkargs_bscallpricer<- function(pricerArgs){
-  if(pricerArgs$tol<=0 && pricerArgs$tol<=1 ){
-    return(FALSE);
-  }
   if (min(pricerArgs$K)<=0){
     return(FALSE);
   }
