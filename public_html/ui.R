@@ -16,12 +16,19 @@ shinyUI(
                       100, min = 0, max = 1000, step = .01),
          numericInput("K", "Strike Price",
                       100, min = 0, max = 1000, step = .01),
+         numericInput("B", "Barrier",
+                      95, min = 0, max = 1000, step = .01),
+         
          numericInput("T", "Time until Maturity",
                       10, min = 0, max = 100, step = .01),
          numericInput("at", "Amivest Ratio",
                       .5, min = 0, max = 100, step = .01),
-         numericInput("tc", "Transa
-                      ction costs (fraction)",
+         numericInput("tc", "Transaction costs (fraction)",
+                      1, min = 0, max = 100, step = .01),
+         numericInput("minsz", "minimum trade size",
+                      1, min = 0, max = 1000, step = .01),
+         
+         numericInput("maxdelta", "maximum delta value",
                       1, min = 0, max = 100, step = .01),
          
          sliderInput("vol", 
