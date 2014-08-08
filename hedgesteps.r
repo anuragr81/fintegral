@@ -35,21 +35,13 @@ hedged_position <- function (path_t,path_values,
                     dS=dS);
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-      print(paste("Do nothing since suggested size(",
-                  nShort,
-                  ") is smaller than threshold(",minTradesize,")"
-      )
-      );
+      #print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
     } else {
       
       if (abs(bs$delta[i])>maxTradedelta)
       {
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-        print(paste("Do nothing since current delta(",
-                    bs$delta[i],
-                    ") is greater than threshold(",maxTradedelta,")"
-        )
-        );        
+        #print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
       }else{
         
         if (isPrint){
