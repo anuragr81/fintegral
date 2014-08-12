@@ -6,7 +6,7 @@ shinyUI(
        headerPanel("PNL Hedging"),
        sidebarPanel(
          actionButton("run", label = "Re-run"),
-         selectInput("option_type", label = h6("OpionType"), 
+         selectInput("option_type", label = h6("OptionType"), 
                      choices = list("European Call" = 0, "Down and out Barrier" = 1),
                      selected = 0),
          checkboxInput('calculate', 'Histogram'),
