@@ -12,13 +12,13 @@ simul <- function(calculate,optionType){
   S_0=100;
   vol=.4;
   dt=.01;
-  T=10;
+  T=1;
   K=50;
   r_f=.05;
   tc=1;
   at=0;
   B=40;
-  minsz=.1;
+  minsz=.000001;
   mindelta=3;
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
@@ -39,40 +39,28 @@ simul <- function(calculate,optionType){
     # could be replaced with an IR model
     path = generate_path(S_0,r_f,vol,dt,T);
     bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
-    isPlot=FALSE;
-    if (isPlot){
-      par(mfrow=c(2,1));
-      plot_xlim=c(0,max(path$t));
-      plot_ylim=c(min(min(bs$price),min(path$values)),
-                  3*max(max(bs$price),max(path$values))
-      );
-      print(plot_xlim);
-      print(plot_ylim);
-      
-      plot(0,0,xlab="Time", ylab="Price", xlim=plot_xlim,ylim=plot_ylim);
-      cl<-rainbow(2);
-      lines(path$t,path$values,col=cl[1],lty=1)
-      lines(path$t,bs$price,col=cl[2],lty=2);
-      legend(.1*plot_xlim[2],1*plot_ylim[2],c("Underlying","Derivative"),col=cl, lty=c(1,2));
-    }
     
-    hp_notcdeltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
+    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
+    hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                        path_t=path$t,path_values=path$values,
                                        tc=0,at=at,
                                        pricerFunc=pricer_func,pricerArgs=pricer_args,
                                        minTradesize=minsz,maxTradedelta=mindelta);
+    print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
     
-    hp_notc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
+    hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
                             path_t=path$t,path_values=path$values,
                             tc=0,at=at,
                             pricerFunc=pricer_func,pricerArgs=pricer_args,
                             minTradesize=minsz,maxTradedelta=mindelta);
-        
-    show_deltas (t=hp_notc$t,
+    if(TRUE){
+      
+    show_deltas (t=hp_deltamethod$t,
                  path_values=path$values,
-                 notc_deltas=hp_notc$deltas,
-                 notc_hedged_pos=hp_notc$hedged_pos,
-                 tc_hedged_pos=hp_notcdeltamethod$hedged_pos);
+                 deltas=hp_deltamethod$deltas,
+                 regular_hedged_pos=hp_zerodpmethod$hedged_pos,
+                 special_hedged_pos=hp_deltamethod$hedged_pos);
+    }
   } else {
     for ( k in seq(500)){
       path = generate_path(S_0,r_f,vol,dt,T);
