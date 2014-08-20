@@ -32,10 +32,15 @@ touch /tmp/out.$$
 head -$startlnum $inputfile >> /tmp/out.$$
 ##
 cat ../bspricers.r >> /tmp/out.$$
+cat ../barrierpricers.r >> /tmp/out.$$
+cat ../hedgesteps.r >> /tmp/out.$$
+cat ../display.r >> /tmp/out.$$
+
 ##
 tail -$endlnum $inputfile >> /tmp/out.$$
 
 cp /tmp/out.$$ $outputfile
+dos2unix $outputfile
 rm -f /tmp/out.$$
 
 
