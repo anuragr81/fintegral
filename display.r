@@ -19,7 +19,7 @@ show_deltas <- function(t,path_values,deltas,regular_hedged_pos,special_hedged_p
   cl<-rainbow(2);
   lines(t,regular_hedged_pos,col=cl[1],lty=1);
   lines(t,special_hedged_pos,col=cl[2],lty=2);
-  legend(.1*max(t),plot_ylim[1]*0.7,c("hedged-pos (zerodp)","hedged-pos (delta))"),col=cl, lty=c(1,2));
+  #legend(.1*max(t),plot_ylim[1]*(0.86),c("hedged-pos (regular)","hedged-pos (special))"),col=cl, lty=c(1,2));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
@@ -30,7 +30,6 @@ show_stock_opt <- function(path,option_prices,hedged_pos) {
   lines(path$t,hedged_pos,col=cl[3],lty=3);
   legend(1,-20,c("option","stock","hedged pos"),col=cl, lty=c(1,2,3));
 }
-
 
 show_barrier_opt_wrt_time <- function(t,callprice,calldelta,doutprice,doutdelta) {
   plot(0,0,xlab="Time", ylab="Prices" , xlim=c(0,max(t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
@@ -51,4 +50,3 @@ show_barrier_opt_wrt_stock <- function(S_t,callprice,calldelta,doutprice,doutdel
   lines(S_t,doutdelta,col=cl[4],lty=4);
   #legend(S_t[1]/32,.6,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
 }
-
