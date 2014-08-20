@@ -12,7 +12,6 @@ hedged_position <- function (path_t,path_values,
     stop("Improper Pricer Args.")
   }
   bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
-  
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
   
@@ -36,13 +35,13 @@ hedged_position <- function (path_t,path_values,
                     dS=dS);
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
+#      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
     } else {
       
       if (abs(bs$delta[i])>maxTradedelta)
       {
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
+#        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
       }else{
         
         if (isPrint){
@@ -61,7 +60,7 @@ hedged_position <- function (path_t,path_values,
     } # end if (maxTradesize)
 #    readline();
   } # end for
-  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
+  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
 num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
