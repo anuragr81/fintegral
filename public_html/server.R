@@ -1,8 +1,52 @@
+
 library(shiny)
 library(ggplot2)
 
-##########################################
+##<START>##
 
+generate_path <- function (S_0,r_f,vol,dt,T){
+    t=0
+    n=T/dt;
+    z=rnorm(n-1);
+    tarray=seq(0,n-1)*dt
+    vec=cumsum((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
+    values=S_0*exp(vec)
+    values=c(S_0,values) # appending initial value
+    return (data.frame(values=values,t=tarray));
+}
+
+checkargs_bscallpricer<- function(pricerArgs){
+  if (min(pricerArgs$K)<=0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$r_f)<0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$vol)<0){
+    return(FALSE);
+  }
+  if (min(pricerArgs$T)<=0){
+    return(FALSE);
+  }
+  return(TRUE);
+}
+
+
+bscallprice <- function(S_0,t,pricerArgs){
+    K=pricerArgs$K;
+    r_f=pricerArgs$r_f;
+    vol=pricerArgs$vol;
+    T=pricerArgs$T;
+    #print(paste("S_0=",S_0,"K=",K,"r_f=",r_f,"T=",T,"t=",t));
+    numerator=log(S_0/K) + (r_f+(vol*vol)*0.5)*(T-t);
+    denominator=vol*sqrt(T-t);
+    d1=(numerator/denominator);
+    d2=d1-vol*sqrt(T-t);
+    price=(S_0*pnorm(d1)-K*exp(-r_f*(T-t))*pnorm(d2));
+    delta=pnorm(d1);
+    gamma=dnorm(d1)/(S_0*vol*sqrt(T-t));    
+    return (data.frame(price=price,delta=delta,gamma=gamma));
+}
 
 value_downandout_func <- function(S,K,B){
   # if S shoots up above B payoff is S_T-K
@@ -76,55 +120,12 @@ downandout_callprice <-function(S_0,t,pricerArgs){
   return(data.frame(price=cbs,delta=delta));
 }
 
-generate_path <- function (S_0,r_f,vol,dt,T){
-  t=0
-  n=T/dt;
-  z=rnorm(n-1);
-  tarray=seq(0,n-1)*dt
-  vec=cumsum((r_f-vol*vol/2)*dt +vol*z*sqrt(dt))
-  values=S_0*exp(vec)
-  values=c(S_0,values) # appending initial value
-  return (data.frame(values=values,t=tarray));
-}
-
-checkargs_bscallpricer<- function(pricerArgs){
-  if (min(pricerArgs$K)<=0){
-    return(FALSE);
-  }
-  if (min(pricerArgs$r_f)<0){
-    return(FALSE);
-  }
-  if (min(pricerArgs$vol)<0){
-    return(FALSE);
-  }
-  if (min(pricerArgs$T)<=0){
-    return(FALSE);
-  }
-  return(TRUE);
-}
-
-
-bscallprice <- function(S_0,t,pricerArgs){
-  K=pricerArgs$K;
-  r_f=pricerArgs$r_f;
-  vol=pricerArgs$vol;
-  T=pricerArgs$T;
-  #print(paste("S_0=",S_0,"K=",K,"r_f=",r_f,"T=",T,"t=",t));
-  numerator=log(S_0/K) + (r_f+(vol*vol)*0.5)*(T-t);
-  denominator=vol*sqrt(T-t);
-  d1=(numerator/denominator);
-  d2=d1-vol*sqrt(T-t);
-  price=(S_0*pnorm(d1)-K*exp(-r_f*(T-t))*pnorm(d2));
-  delta=pnorm(d1);
-  gamma=dnorm(d1)/(S_0*vol*sqrt(T-t));    
-  return (data.frame(price=price,delta=delta,gamma=gamma));
-}
-
 hedged_position <- function (path_t,path_values,
                              tc,at,
                              checkArgs,pricerFunc,pricerArgs,
                              stepFunc,minTradesize,maxTradedelta) {
-  isPrint=FALSE;
+  isPrint<-FALSE;
+
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
@@ -132,7 +133,6 @@ hedged_position <- function (path_t,path_values,
     stop("Improper Pricer Args.")
   }
   bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
-  
   nShortedStocks = bs$delta[1];
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
   
@@ -156,13 +156,13 @@ hedged_position <- function (path_t,path_values,
                     dS=dS);
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-      #print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
+#      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
     } else {
       
       if (abs(bs$delta[i])>maxTradedelta)
       {
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-        #print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
+#        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
       }else{
         
         if (isPrint){
@@ -179,8 +179,9 @@ hedged_position <- function (path_t,path_values,
         }
       }# end if (maxTradedelta)
     } # end if (maxTradesize)
+#    readline();
   } # end for
-  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta));
+  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
 num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
@@ -319,7 +320,7 @@ pnl_value <- function(S_t,P_t,nShorted,at,tc) {
   return (P_t-nShorted*(S_t-nShorted*at)-abs(nShorted)*tc);
 }
 
-show_deltas <- function(t,path_values,notc_deltas,notc_hedged_pos,tc_hedged_pos) {
+show_deltas <- function(t,path_values,deltas,regular_hedged_pos,special_hedged_pos) {
   
   par(mfrow=c(1,2));
   # show underlying and delta
@@ -329,17 +330,17 @@ show_deltas <- function(t,path_values,notc_deltas,notc_hedged_pos,tc_hedged_pos)
        xlim=c(0,max(t)),ylim=c(-10,10));
   cl<-rainbow(2);
   lines(t,path_values/factor,col=cl[1],lty=1)
-  lines(t,notc_deltas,col=cl[2],lty=2);
+  lines(t,deltas,col=cl[2],lty=2);
   legend(.1,10,c(paste("UnderlyingPrice/",factor),
-                 "Delta"),
+                                          "Delta"),
          col=cl, lty=c(1,2));
   
-  plot_ylim<-c(min(min(notc_hedged_pos),min(tc_hedged_pos)),max(max(notc_hedged_pos),max(tc_hedged_pos)));  
+  plot_ylim<-c(min(min(regular_hedged_pos),min(special_hedged_pos)),max(max(regular_hedged_pos),max(special_hedged_pos)));  
   plot(0,0,xlab="Time", ylab="HedgedPosition", xlim=c(0,max(t)),ylim=plot_ylim);
   cl<-rainbow(2);
-  lines(t,notc_hedged_pos,col=cl[1],lty=1);
-  lines(t,tc_hedged_pos,col=cl[2],lty=2);
-  legend(.1*max(t),mean(plot_ylim),c("hedged-pos (delta)","hedged-pos (zerodP)"),col=cl, lty=c(1,2));
+  lines(t,regular_hedged_pos,col=cl[1],lty=1);
+  lines(t,special_hedged_pos,col=cl[2],lty=2);
+  #legend(.1*max(t),plot_ylim[1]*(0.86),c("hedged-pos (regular)","hedged-pos (special))"),col=cl, lty=c(1,2));
 }
 
 show_stock_opt <- function(path,option_prices,hedged_pos) {
@@ -350,7 +351,6 @@ show_stock_opt <- function(path,option_prices,hedged_pos) {
   lines(path$t,hedged_pos,col=cl[3],lty=3);
   legend(1,-20,c("option","stock","hedged pos"),col=cl, lty=c(1,2,3));
 }
-
 
 show_barrier_opt_wrt_time <- function(t,callprice,calldelta,doutprice,doutdelta) {
   plot(0,0,xlab="Time", ylab="Prices" , xlim=c(0,max(t)),ylim=c( min(0,min(doutdelta)), max(doutdelta)))
@@ -371,8 +371,7 @@ show_barrier_opt_wrt_stock <- function(S_t,callprice,calldelta,doutprice,doutdel
   lines(S_t,doutdelta,col=cl[4],lty=4);
   #legend(S_t[1]/32,.6,c("call_normalized","call-delta","barrier_normalized","barrier-delta"),col=cl, lty=c(1,2,3,4));
 }
-
-##########################################
+##<END>##
 
 display<- function(S_0,K,B,r_f,vol,at,tc,dt,T,rerun,calculate,minsz,maxdelta,option_type){
   
