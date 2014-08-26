@@ -257,14 +257,7 @@ x=\frac{{(\delta_{0}-n)\Delta S+\gamma_{0}(\Delta S)^{2}/2}}{S_{t}}
 
 \begin_layout Standard
 \paragraph_spacing onehalf
-In a real-world world scenario, deltas and gammas can hardly be assumed
- as constant.
- One often relies on the Black-Scholes model to arrive at delta and gamma
- values for above analysis.
- Relieving the assumptions of constant volatility further (e.g.
- by using an Implied Volatility Function) could provide better approximations.
- What also matters in the real-world is the rebalancing frequency - if there
- is big jump in stock price (high 
+When there is big jump in stock price (high 
 \begin_inset Formula $\Delta S$
 \end_inset
 
@@ -273,14 +266,9 @@ In a real-world world scenario, deltas and gammas can hardly be assumed
 \end_inset
 
  doesn't provide a reasonable approximation.
- 
-\end_layout
-
-\begin_layout Standard
-\paragraph_spacing onehalf
-It is a bit like a tailor who has been paid in advance for a suit to be
- delivered next year for the customer's son who grows exponentially in his
- teen years.
+ This is a bit like a tailor who has been paid in advance for a suit to
+ be delivered next year for the customer's son who grows exponentially in
+ his teen years.
  Without knowledge of the height-profile of a typical teen, the tailor can
  only make guesses based on past measurements.
  If the customer's son grows really tall in a single year, the tailor would
@@ -341,7 +329,7 @@ The assumption that we have apriori knowledge price of options and stocks
 \begin_inset Formula $\int dP$
 \end_inset
 
- while a simple delta-strategy only looks at short-term variations 
+ - while a simple delta-strategy only looks at short-term variations 
 \begin_inset Formula $dP$
 \end_inset
 
