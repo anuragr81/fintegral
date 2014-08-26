@@ -8,11 +8,13 @@ hedged_position <- function (path_t,path_values,
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
+  nstocks=array();
   if (!checkArgs(pricerArgs)){
     stop("Improper Pricer Args.")
   }
   bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
   nShortedStocks = bs$delta[1];
+  nstocks[1]=nShortedStocks;
   hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
   
   if (isPrint){
@@ -34,13 +36,15 @@ hedged_position <- function (path_t,path_values,
                     nShortedStocks=nShortedStocks,
                     dS=dS);
     if (abs(nShort)<minTradesize  ) {
-      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc)
+      nstocks[i]=nShortedStocks;
 #      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
     } else {
       
       if (abs(bs$delta[i])>maxTradedelta)
       {
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+        nstocks[i]=nShortedStocks;
 #        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
       }else{
         
@@ -48,10 +52,13 @@ hedged_position <- function (path_t,path_values,
           print(paste("Before: nShort(to short)=",nShort,"nShortedStocks=",nShortedStocks))
         }
         nShortedStocks = nShortedStocks + nShort;
+        
         if (isPrint){
           print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
         }
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+        nstocks[i]=nShortedStocks;
+        
         if (isPrint){
           print(paste("hedged_pos[",i,"]=",hedged_pos[i]));
           print(paste("price=",bs$price[i],"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
@@ -60,7 +67,7 @@ hedged_position <- function (path_t,path_values,
     } # end if (maxTradesize)
 #    readline();
   } # end for
-  return(data.frame(hedged_pos=hedged_pos,t=path_t,deltas=bs$delta,bsprice=bs$price));
+  return(data.frame(hedged_pos=hedged_pos,nstocks=nstocks,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
 num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
