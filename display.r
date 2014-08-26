@@ -1,18 +1,20 @@
 
 show_deltas <- function(t,path_values,deltas,regular_hedged_pos,special_hedged_pos) {
   
-  par(mfrow=c(1,2));
+  par(mfrow=c(2,2));
   # show underlying and delta
   factor=10^(as.integer(log(max(path_values),10)));
   #a = a/factor X factor
-  plot(0,0,xlab="Time", ylab=paste("price/",factor), 
-       xlim=c(0,max(t)),ylim=c(-10,10));
-  cl<-rainbow(2);
-  lines(t,path_values/factor,col=cl[1],lty=1)
-  lines(t,deltas,col=cl[2],lty=2);
-  legend(.1,10,c(paste("UnderlyingPrice/",factor),
-                                          "Delta"),
-         col=cl, lty=c(1,2));
+  plot(t,ylab='Stock Price',path_values,type='l')
+  plot(t,ylab='Delta',deltas,type='l')
+  #plot(0,0,xlab="Time", ylab=paste("price/",factor), 
+  #     xlim=c(0,max(t)),ylim=c(-10,10));
+  #cl<-rainbow(2);
+  #lines(t,path_values/factor,col=cl[1],lty=1)
+  #lines(t,deltas,col=cl[2],lty=2);
+  #legend(.1,10,c(paste("UnderlyingPrice/",factor),
+  #                                        "Delta"),
+  #      col=cl, lty=c(1,2));
   
   plot_ylim<-c(min(min(regular_hedged_pos),min(special_hedged_pos)),max(max(regular_hedged_pos),max(special_hedged_pos)));  
   plot(0,0,xlab="Time", ylab="HedgedPosition", xlim=c(0,max(t)),ylim=plot_ylim);
