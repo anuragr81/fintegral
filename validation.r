@@ -8,6 +8,16 @@ source("barrierpricers.r")
 source("hedgesteps.r")
 source("display.r")
 
+#
+#S_0=100;
+#vol=0.4;
+#dt=.001;
+#T=1;
+#K=50;
+#r_f=.05;
+#tc=0;
+#at=0;
+#
 # I checked that d\Pi = dP-\Delta dS grows as r\Pidt
 # What I am not sure about is whether I need 
 # to worry about volatility (variance) of d\Pi or \Pi
@@ -25,7 +35,7 @@ source("display.r")
 # is ~56 and mean-sd is ~43. Deltas (N(d_1)) don't have lognormal 
 # distribution - mean is .95 and mean sd is .208.
 # d1 is normally distributed ( ln (S/K) ) so N(d1) should be as well.
-# 
+# Pi - mean is 47.5 - mean sd 10.6.
 
 # The idea that I am now thinking is the deviation from deltas that would 
 # affect the overall variance of \Pi.
@@ -50,24 +60,26 @@ test <- function(){
   check_args= checkargs_bscallpricer;
   out=array();
   par(mfrow=c(1,1));
-  for (i in seq(1,100)){
+  for (i in seq(1,10)){
     path = generate_path(S_0,r_f,vol,dt,T);
-    #bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
+    bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
     #dSs=diff(path$values);
     #dPs=diff(bs$price);
     #dPis=dPs-bs$delta[1:length(bs$delta)-1]*dSs;
     t=T-dt;
     S_t=path$values[length(path$values)];
+    Pi=bs$price[length(bs$price)]-bs$delta[length(bs$delta)]*S_t;  
     numerator=log(S_t/K) + (r_f+(vol*vol)*0.5)*(T-t);
     denominator=vol*sqrt(T-t);
     d1=(numerator/denominator);
     d2=d1-vol*sqrt(T-t);
-    out[i]=d1;
+    out[i]=-Pi;
   }
   
   hist(out);
   print(mean(out));
   print(sd(out));
+  
 }
 
 simul <- function(calculate,optionType){
@@ -123,8 +135,8 @@ simul <- function(calculate,optionType){
       show_deltas (t=hp_deltamethod$t,
                    path_values=path$values,
                    deltas=hp_deltamethod$deltas,
-                   regular_hedged_pos=hp_zerodpmethod$hedged_pos,
-                   special_hedged_pos=hp_deltamethod$hedged_pos);
+                   regular_hedged_pos=hp_zerodpmethod$nstocks,
+                   special_hedged_pos=hp_deltamethod$nstocks);
     }
   } else {
     sd_dmk=array();
@@ -206,20 +218,22 @@ testBarrier<- function(){
 }
 
 testBSStock <- function() {
-  S_0=100
-  r_f=.1
-  vol=.5
-  dt=.01
-  T=3
-  K=70
+  S_0=100;
+  r_f=.1;
+  vol=.5;
+  dt=.01;
+  T=3;
+  K=50;
   path = generate_path(S_0,r_f,vol,dt,T);
-  nh=T/dt
-  start=0
-  end=2
-  df=(end-start)/nh
-  volvec=seq(start,end-df,df)
+  nh=T/dt;
+  start=0;
+  end=2;
+  df=(end-start)/nh;
+  vec_vol=rep(.4,nh);#seq(start,end-df,df)
   S_t=2*S_0*(1+seq(1:nh))/nh;
-  bs = bscallprice(S_0=S_t,K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=rep(0,nh),T=rep(T,nh));
+  pricer_args = data.frame(r_f=r_f,vol=vec_vol,dt=dt,T=T,K=K,B=0,tol=.001)
+  bs = bscallprice(pricerArgs=pricer_args,S_0=S_t,t=path$t);
+  
   plot(0,0,xlab="Stock", ylab="", xlim=c(0,max(S_t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
   cl<-rainbow(2);
   lines(S_t,bs$delta,col=cl[1],lty=1)
@@ -249,6 +263,5 @@ testBS <- function(){
   cl<-rainbow(2);
   lines(path$t,bs$delta,col=cl[1],lty=1)
   lines(path$t,bs$price/K,col=cl[2],lty=2);
-  legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2));
-  
+  legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2)); 
 }
