@@ -8,6 +8,68 @@ source("barrierpricers.r")
 source("hedgesteps.r")
 source("display.r")
 
+# I checked that d\Pi = dP-\Delta dS grows as r\Pidt
+# What I am not sure about is whether I need 
+# to worry about volatility (variance) of d\Pi or \Pi
+# The minimization of volatility of d\Pi (across space rather than 
+# ) leads to delta hedging. volatility of d\Pi across time is
+# path dependent and hence depends on S,P. Volatility of \Pi is 
+# therefore the right quantity to optimize
+# With delta-strategy we expect variance of d\Pi as near zero.
+# Experimentally the mean sd of d\Pis (across time evolution) is 1e-3.
+# variance across time vs space needs to be considered. 
+# variance across space can be measured with time fixed. For S and with t=T,
+# S would show log-normal distribution and hence it's variance is
+# easy to verify. Mean is ~105 and mean-sd ~ 43. 
+# The  option-prices also have the lognormal distribution. mean 
+# is ~56 and mean-sd is ~43. Deltas (N(d_1)) don't have lognormal 
+# distribution - mean is .95 and mean sd is .208.
+# d1 is normally distributed ( ln (S/K) ) so N(d1) should be as well.
+# 
+
+# The idea that I am now thinking is the deviation from deltas that would 
+# affect the overall variance of \Pi.
+
+test <- function(){
+  S_0=100;
+  vol=0.4;
+  dt=.001;
+  T=1;
+  K=50;
+  r_f=.05;
+  tc=0;
+  at=0;
+  B=40;
+  minsz=.000001;
+  maxdelta=3;
+  nh=T/dt;
+  vec_r_f=rep(r_f,nh)
+  vec_vol=rep(vol,nh)
+  pricer_func=bscallprice;
+  pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
+  check_args= checkargs_bscallpricer;
+  out=array();
+  par(mfrow=c(1,1));
+  for (i in seq(1,100)){
+    path = generate_path(S_0,r_f,vol,dt,T);
+    #bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
+    #dSs=diff(path$values);
+    #dPs=diff(bs$price);
+    #dPis=dPs-bs$delta[1:length(bs$delta)-1]*dSs;
+    t=T-dt;
+    S_t=path$values[length(path$values)];
+    numerator=log(S_t/K) + (r_f+(vol*vol)*0.5)*(T-t);
+    denominator=vol*sqrt(T-t);
+    d1=(numerator/denominator);
+    d2=d1-vol*sqrt(T-t);
+    out[i]=d1;
+  }
+  
+  hist(out);
+  print(mean(out));
+  print(sd(out));
+}
+
 simul <- function(calculate,optionType){
   S_0=100;
   vol=0.4;
@@ -40,29 +102,29 @@ simul <- function(calculate,optionType){
     
     print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
     hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
-                                       path_t=path$t,path_values=path$values,
-                                       tc=0,at=at,
-                                       pricerFunc=pricer_func,pricerArgs=pricer_args,
-                                       minTradesize=minsz,maxTradedelta=maxdelta);
+                                   path_t=path$t,path_values=path$values,
+                                   tc=0,at=at,
+                                   pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                   minTradesize=minsz,maxTradedelta=maxdelta);
     print(data.frame(bsprice=hp_deltamethod$bsprice,
                      bsdeltas=hp_deltamethod$deltas));
     print(exp(r_f*T)*
             (hp_deltamethod$bsprice[1]-hp_deltamethod$deltas[1]*path$values[1])
-          )
+    )
     print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
     
     hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
-                            path_t=path$t,path_values=path$values,
-                            tc=0,at=at,
-                            pricerFunc=pricer_func,pricerArgs=pricer_args,
-                            minTradesize=minsz,maxTradedelta=maxdelta);
+                                    path_t=path$t,path_values=path$values,
+                                    tc=0,at=at,
+                                    pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                    minTradesize=minsz,maxTradedelta=maxdelta);
     if(TRUE){
       
-    show_deltas (t=hp_deltamethod$t,
-                 path_values=path$values,
-                 deltas=hp_deltamethod$deltas,
-                 regular_hedged_pos=hp_zerodpmethod$hedged_pos,
-                 special_hedged_pos=hp_deltamethod$hedged_pos);
+      show_deltas (t=hp_deltamethod$t,
+                   path_values=path$values,
+                   deltas=hp_deltamethod$deltas,
+                   regular_hedged_pos=hp_zerodpmethod$hedged_pos,
+                   special_hedged_pos=hp_deltamethod$hedged_pos);
     }
   } else {
     sd_dmk=array();
@@ -79,7 +141,7 @@ simul <- function(calculate,optionType){
                                      tc=0,at=at,
                                      pricerFunc=pricer_func,pricerArgs=pricer_args,
                                      minTradesize=minsz,maxTradedelta=maxdelta);
-
+      
       hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
                                       path_t=path$t,path_values=path$values,
                                       tc=0,at=at,
@@ -102,7 +164,7 @@ simul <- function(calculate,optionType){
   }
 }
 
-test <- function(K) {
+testStockGamma <- function(K) {
   ds=.1;
   finS=3*K;
   veclen=as.integer(finS/ds);
