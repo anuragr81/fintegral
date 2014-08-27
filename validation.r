@@ -131,12 +131,25 @@ simul <- function(calculate,optionType){
                                     pricerFunc=pricer_func,pricerArgs=pricer_args,
                                     minTradesize=minsz,maxTradedelta=maxdelta);
     if(TRUE){
+      par(mfrow=c(2,2));
       
-      show_deltas (t=hp_deltamethod$t,
-                   path_values=path$values,
-                   deltas=hp_deltamethod$deltas,
-                   regular_hedged_pos=hp_zerodpmethod$nstocks,
-                   special_hedged_pos=hp_deltamethod$nstocks);
+      plot(path$t,xlab="Time",ylab='Stock Price',path$values,type='l')
+      plot(path$t,xlab="Time",ylab='Delta of Call',hp_deltamethod$deltas,type='l')
+      
+#      show_comparison (t=hp_deltamethod$t[1:length(hp_deltamethod$t)-1],
+#                   regular_hedged_pos=diff(hp_zerodpmethod$nstocks),
+#                   special_hedged_pos=diff(hp_deltamethod$nstocks),
+#                   tagname="Change in ShortedStocks");
+      show_comparison (t=hp_deltamethod$t,
+                   regular_hedged_pos=(hp_zerodpmethod$nstocks),
+                   special_hedged_pos=(hp_deltamethod$nstocks),
+                   tagname="ShortedStocks");
+
+      show_comparison (t=hp_deltamethod$t,
+                   regular_hedged_pos=hp_zerodpmethod$hedged_pos,
+                   special_hedged_pos=hp_deltamethod$hedged_pos,
+                   tagname="Net PNL");
+      
     }
   } else {
     sd_dmk=array();
