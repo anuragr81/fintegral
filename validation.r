@@ -97,6 +97,11 @@ simul <- function(calculate,optionType){
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
+  
+  if(maxdelta<0){
+    stop("maxTradedelta must be positive.");
+  }
+  
   if (optionType==1){
     pricer_func=bscallprice;
     pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
