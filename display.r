@@ -1,5 +1,5 @@
 
-show_comparison <- function(t,regular_hedged_pos,special_hedged_pos,tagname) {
+show_comparison <- function(t,regular,special,tagname) {
   
   # show underlying and delta
   # factor=10^(as.integer(log(max(path_values),10)));
@@ -14,11 +14,11 @@ show_comparison <- function(t,regular_hedged_pos,special_hedged_pos,tagname) {
   #                                        "Delta"),
   #      col=cl, lty=c(1,2));
   
-  plot_ylim<-c(min(min(regular_hedged_pos),min(special_hedged_pos)),max(max(regular_hedged_pos),max(special_hedged_pos)));  
+  plot_ylim<-c(min(min(regular),min(special)),max(max(regular),max(special)));  
   plot(0,0,xlab="Time", ylab=tagname, xlim=c(0,max(t)),ylim=plot_ylim);
   cl<-rainbow(2);
-  lines(t,regular_hedged_pos,col=cl[1],lty=1,type='s');
-  lines(t,special_hedged_pos,col=cl[2],lty=2,type='s');
+  lines(t,regular,col=cl[1],lty=1,type='s');
+  lines(t,special,col=cl[2],lty=2,type='s');
   #legend(.1*max(t),plot_ylim[1]*(0.86),c("hedged-pos (regular)","hedged-pos (special))"),col=cl, lty=c(1,2));
 }
 
