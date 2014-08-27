@@ -92,8 +92,9 @@ num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShort
   #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
 }
 
+
 num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtdelta,nShortedStocks,dS,dP)
-  {
+{
   # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
   #print(paste("S_t=",underlying_price,"n=",nShortedStocks,"amivest=",amivest,"tc=",tc))
   if (amivest==0){
@@ -102,9 +103,9 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtde
   
   A  = 2*amivest
   B1 = underlying_price-nShortedStocks*amivest+tc
-  D1 = (underlying_price-nShortedStocks*amivest+tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x>0
+  D1 = (underlying_price-nShortedStocks*amivest+tc)^2-4*amivest*(dP-nShortedStocks*dS); # x>0
   B2 = underlying_price-nShortedStocks*amivest-tc
-  D2 = (underlying_price-nShortedStocks*amivest-tc)^2-4*amivest*(delta-nShortedStocks)*dS; # x<0
+  D2 = (underlying_price-nShortedStocks*amivest-tc)^2-4*amivest*(dP-nShortedStocks*dS); # x<0
   #print(paste("D1=",D1))
   #print(paste("D2=",D2))
   
@@ -197,7 +198,6 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtde
   #print(paste("xO1=",xO1,"xO2=",xO2,"xT1=",xT1,"xT2=",xT2))
   
 }
-
 
 num_stocks_to_short_deltas <- function(underlying_price,amivest,tc,delta,nxtdelta,nShortedStocks,dS,dP){
   return(nxtdelta-delta);
