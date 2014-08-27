@@ -112,18 +112,18 @@ simul <- function(calculate,optionType){
     path = generate_path(S_0,r_f,vol,dt,T);
     bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
     
-    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
+#    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
     hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                    path_t=path$t,path_values=path$values,
                                    tc=0,at=at,
                                    pricerFunc=pricer_func,pricerArgs=pricer_args,
                                    minTradesize=minsz,maxTradedelta=maxdelta);
-    print(data.frame(bsprice=hp_deltamethod$bsprice,
-                     bsdeltas=hp_deltamethod$deltas));
+#    print(data.frame(bsprice=hp_deltamethod$bsprice,
+#                     bsdeltas=hp_deltamethod$deltas));
     print(exp(r_f*T)*
             (hp_deltamethod$bsprice[1]-hp_deltamethod$deltas[1]*path$values[1])
     )
-    print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
+#    print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
     
     hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
                                     path_t=path$t,path_values=path$values,
@@ -136,19 +136,19 @@ simul <- function(calculate,optionType){
       plot(path$t,xlab="Time",ylab='Stock Price',path$values,type='l')
       plot(path$t,xlab="Time",ylab='Delta of Call',hp_deltamethod$deltas,type='l')
       
-#      show_comparison (t=hp_deltamethod$t[1:length(hp_deltamethod$t)-1],
-#                   regular_hedged_pos=diff(hp_zerodpmethod$nstocks),
-#                   special_hedged_pos=diff(hp_deltamethod$nstocks),
-#                   tagname="Change in ShortedStocks");
+      #      show_comparison (t=hp_deltamethod$t[1:length(hp_deltamethod$t)-1],
+      #                   regular_hedged_pos=diff(hp_zerodpmethod$nstocks),
+      #                   special_hedged_pos=diff(hp_deltamethod$nstocks),
+      #                   tagname="Change in ShortedStocks");
       show_comparison (t=hp_deltamethod$t,
-                   regular_hedged_pos=(hp_zerodpmethod$nstocks),
-                   special_hedged_pos=(hp_deltamethod$nstocks),
-                   tagname="ShortedStocks");
-
+                       regular=(hp_zerodpmethod$nstocks),
+                       special=(hp_deltamethod$nstocks),
+                       tagname="ShortedStocks");
+      
       show_comparison (t=hp_deltamethod$t,
-                   regular_hedged_pos=hp_zerodpmethod$hedged_pos,
-                   special_hedged_pos=hp_deltamethod$hedged_pos,
-                   tagname="Net PNL");
+                       regular=hp_zerodpmethod$hedged_pos,
+                       special=hp_deltamethod$hedged_pos,
+                       tagname="Net PNL");
       
     }
   } else {
