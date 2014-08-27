@@ -1,12 +1,10 @@
 
-show_deltas <- function(t,path_values,deltas,regular_hedged_pos,special_hedged_pos) {
+show_comparison <- function(t,regular_hedged_pos,special_hedged_pos,tagname) {
   
-  par(mfrow=c(2,2));
   # show underlying and delta
-  factor=10^(as.integer(log(max(path_values),10)));
+  # factor=10^(as.integer(log(max(path_values),10)));
   #a = a/factor X factor
-  plot(t,ylab='Stock Price',path_values,type='l')
-  plot(t,ylab='Delta',deltas,type='l')
+
   #plot(0,0,xlab="Time", ylab=paste("price/",factor), 
   #     xlim=c(0,max(t)),ylim=c(-10,10));
   #cl<-rainbow(2);
@@ -17,10 +15,10 @@ show_deltas <- function(t,path_values,deltas,regular_hedged_pos,special_hedged_p
   #      col=cl, lty=c(1,2));
   
   plot_ylim<-c(min(min(regular_hedged_pos),min(special_hedged_pos)),max(max(regular_hedged_pos),max(special_hedged_pos)));  
-  plot(0,0,xlab="Time", ylab="HedgedPosition", xlim=c(0,max(t)),ylim=plot_ylim);
+  plot(0,0,xlab="Time", ylab=tagname, xlim=c(0,max(t)),ylim=plot_ylim);
   cl<-rainbow(2);
-  lines(t,regular_hedged_pos,col=cl[1],lty=1);
-  lines(t,special_hedged_pos,col=cl[2],lty=2);
+  lines(t,regular_hedged_pos,col=cl[1],lty=1,type='s');
+  lines(t,special_hedged_pos,col=cl[2],lty=2,type='s');
   #legend(.1*max(t),plot_ylim[1]*(0.86),c("hedged-pos (regular)","hedged-pos (special))"),col=cl, lty=c(1,2));
 }
 
