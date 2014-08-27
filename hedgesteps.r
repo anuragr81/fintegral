@@ -4,7 +4,7 @@ hedged_position <- function (path_t,path_values,
                              checkArgs,pricerFunc,pricerArgs,
                              stepFunc,minTradesize,maxTradedelta) {
   isPrint<-FALSE;
-
+  
   nh = length(path_values);
   option_prices=array();
   hedged_pos=array();
@@ -24,8 +24,10 @@ hedged_position <- function (path_t,path_values,
   for ( i in seq (2,nh) ) {
     
     dS= path_values[i] - path_values[i-1];
+    dP= bs$price[i]-bs$price[i-1];
+ 
     if (isPrint){
-      print(paste("dS=",dS,"nShortedStocks=",nShortedStocks))
+      print(paste("dS=",dS,"dP=",dP,"nShortedStocks=",nShortedStocks))
     }
     
     nShort=stepFunc(tc=tc,
@@ -34,18 +36,19 @@ hedged_position <- function (path_t,path_values,
                     delta=bs$delta[i-1],
                     nxtdelta=bs$delta[i],
                     nShortedStocks=nShortedStocks,
-                    dS=dS);
+                    dS=dS,
+                    dP=dP);
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc)
       nstocks[i]=nShortedStocks;
-#      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
+      #      print(paste("Do nothing since suggested size(",nShort,") is smaller than threshold(",minTradesize,")"));
     } else {
       
       if (abs(bs$delta[i])>maxTradedelta)
       {
         hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
         nstocks[i]=nShortedStocks;
-#        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
+        #        print(paste("Do nothing since current delta(",bs$delta[i],") is greater than threshold(",maxTradedelta,")"));        
       }else{
         
         if (isPrint){
@@ -65,14 +68,15 @@ hedged_position <- function (path_t,path_values,
         }
       }# end if (maxTradedelta)
     } # end if (maxTradesize)
-#    readline();
+    #    readline();
   } # end for
   return(data.frame(hedged_pos=hedged_pos,nstocks=nstocks,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
-num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS){
+num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShortedStocks,dS,dP)
+{
   # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
-  numerator=(delta-nShortedStocks)*dS
+  numerator=dP-nShortedStocks*dS
   if (numerator>0){
     denominator=underlying_price+tc # always +ve
     return (numerator/denominator)
@@ -88,11 +92,12 @@ num_stocks_to_short_zerodp <- function(underlying_price,tc,delta,nxtdelta,nShort
   #return ((1/(tc+underlying_price))*((delta-nShortedStocks)*dS));
 }
 
-num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtdelta,nShortedStocks,dS){
+num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtdelta,nShortedStocks,dS,dP)
+  {
   # Check if x<0 or x>0 conditions apply. If neither works, return x=0 (don't hedge) and report error
   #print(paste("S_t=",underlying_price,"n=",nShortedStocks,"amivest=",amivest,"tc=",tc))
   if (amivest==0){
-    return(num_stocks_to_short_zerodp(underlying_price=underlying_price,tc=tc,delta=delta,nShortedStocks=nShortedStocks,dS=dS,nxtdelta=nxtdelta));
+    return(num_stocks_to_short_zerodp(underlying_price=underlying_price,tc=tc,delta=delta,nShortedStocks=nShortedStocks,dS=dS,nxtdelta=nxtdelta,dP=dP));
   }
   
   A  = 2*amivest
@@ -194,12 +199,8 @@ num_stocks_to_short_zerodp_g <- function(underlying_price,tc,amivest,delta,nxtde
 }
 
 
-num_stocks_to_short_deltas <- function(underlying_price,amivest,tc,delta,nxtdelta,nShortedStocks,dS){
+num_stocks_to_short_deltas <- function(underlying_price,amivest,tc,delta,nxtdelta,nShortedStocks,dS,dP){
   return(nxtdelta-delta);
-}
-
-num_stocks_to_short_direct <- function(underlying_price,dP,nShortedStocks,dS){
-  return ((1/underlying_price)*(dP-nShortedStocks*dS));
 }
 
 pnl_value <- function(S_t,P_t,nShorted,at,tc) {
