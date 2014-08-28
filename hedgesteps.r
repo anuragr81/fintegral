@@ -1,4 +1,13 @@
 
+display_position <- function(isPrint,nShort,nShortedStocks,bsprice,pos)
+{
+  if (isPrint){
+    print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
+    print(paste("hedged_pos=",pos));
+    print(paste("price=",bsprice,"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",pos));
+  }
+}
+
 hedged_position <- function (path_t,path_values,
                              tc,at,
                              checkArgs,pricerFunc,pricerArgs,
@@ -47,45 +56,36 @@ hedged_position <- function (path_t,path_values,
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc)
       nstocks[i]=nShortedStocks;
-      
-    } else {
-      
-      if (zp_delta>maxTradedelta){
-        # we short only maxTradeDelta 
-        nShortedStocks=nShortedStocks+maxTradeDelta;
-        hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-        nstocks[i]=nShortedStocks;
-        
-      } else {
-        
-        if (zp_delta < -maxTradedelta){
-          # we short only -maxTradedelta
-          nShortedStocks=nShortedStocks-maxTradeDelta;
-          hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-          nstocks[i]=nShortedStocks;
-        } else {
-          
-          nShortedStocks = nShortedStocks + nShort;
-          
-          hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
-          nstocks[i]=nShortedStocks;
-          
-        }# -maxTradeDelta ifend
-        
-      } # maxTradeDelta ifend
-      
-    }# minSize ifend
+      display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
+      next;
+    } 
     
-    if (isPrint){
-      print(paste("After: nShort(shorted)=",nShort,"nShortedStocks=",nShortedStocks))
-    }
+    if (zp_delta>maxTradedelta){
+      # we short only maxTradeDelta 
+      nShortedStocks=nShortedStocks+maxTradeDelta;
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+      nstocks[i]=nShortedStocks;
+      display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
+      next;
+    } 
     
-    if (isPrint){
-      print(paste("hedged_pos[",i,"]=",hedged_pos[i]));
-      print(paste("price=",bs$price[i],"nshort=",nShort,"nShortedStocks=",nShortedStocks,"Position=",hedged_pos[i]));
-    }
+    if (zp_delta < -maxTradedelta){
+      # we short only -maxTradedelta
+      nShortedStocks=nShortedStocks-maxTradeDelta;
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+      nstocks[i]=nShortedStocks;
+      display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
+      next;
+    } 
+    
+    nShortedStocks = nShortedStocks + nShort;
+    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+    nstocks[i]=nShortedStocks;
+    display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
     
   } # end for
+  print(paste("len(hedged_pos)=",length(hedged_pos),"len(nstocks)=",length(nstocks),
+              "len(bsdelta)=",length(bs$delta),"len(bsprice)=",length(bs$price)))
   return(data.frame(hedged_pos=hedged_pos,nstocks=nstocks,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
