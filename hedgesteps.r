@@ -51,7 +51,7 @@ hedged_position <- function (path_t,path_values,
       print(paste("Before: nShort(to short)=",nShort,"nShortedStocks=",nShortedStocks))
     }
     
-    zp_delta=bs$delta[i]-nShortedStocks; # nShortedStocks is the current delta (for all methods )
+    zp_delta=bs$delta[i]-nShortedStocks; # nShortedStocks is the current effective delta (for all methods )
     
     if (abs(nShort)<minTradesize  ) {
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc)
@@ -61,8 +61,9 @@ hedged_position <- function (path_t,path_values,
     } 
     
     if (zp_delta>maxTradedelta){
-      # we short only maxTradeDelta 
-      nShortedStocks=nShortedStocks+maxTradeDelta;
+      # we short only maxTradeDelta
+      print("zp_delta>maxTradedelta")
+      nShortedStocks=nShortedStocks+maxTradedelta;
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
       display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
@@ -71,7 +72,8 @@ hedged_position <- function (path_t,path_values,
     
     if (zp_delta < -maxTradedelta){
       # we short only -maxTradedelta
-      nShortedStocks=nShortedStocks-maxTradeDelta;
+      print("zp_delta<maxTradedelta")
+      nShortedStocks=nShortedStocks-maxTradedelta;
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
       display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
