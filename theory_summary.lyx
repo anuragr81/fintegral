@@ -27,8 +27,8 @@
 \paperfontsize default
 \spacing onehalf
 \use_hyperref false
-\papersize default
-\use_geometry false
+\papersize a4paper
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -43,6 +43,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -70,7 +74,8 @@ Self-financing portfolio
 
 \begin_layout Standard
 The well-known Black-Scholes equation is obtained with a self-financing
- combination of a bond and a stock - which replicates the payoff of an option.
+ tracking portfolio of a bond and a stock - a combination that replicates
+ the payoff of an option.
  Since value of 
 \begin_inset Formula $V=\alpha B+\Delta S$
 \end_inset
@@ -79,8 +84,8 @@ The well-known Black-Scholes equation is obtained with a self-financing
 \begin_inset Formula $\alpha,\Delta$
 \end_inset
 
- - the adjustment of 
-\begin_inset Formula $V$
+ - the adjustments of 
+\begin_inset Formula $dV$
 \end_inset
 
  at every increment 
@@ -110,7 +115,15 @@ dV & = & (\alpha rB+\mu\Delta S)dt+\sigma\Delta SdW
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $dV=\frac{{\partial V}}{\partial t}dt+\frac{{\partial V}}{\partial S}dS+\frac{{1}}{2}\frac{{\partial^{2}V}}{\partial S^{2}}dS^{2}=\frac{\partial V}{\partial t}dt+\frac{\partial V}{\partial S}(\mu Sdt+\sigma SdW)+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2}dt$
+The Ito's lemma provides a differential equation for 
+\begin_inset Formula $dV$
+\end_inset
+
+: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $dV=\frac{{\partial V}}{\partial t}dt+\frac{{\partial V}}{\partial S}dS+\frac{{1}}{2}\frac{{\partial^{2}V}}{\partial S^{2}}dS^{2}=\frac{\partial V}{\partial t}dt+\frac{\partial V}{\partial S}(\mu Sdt+\sigma SdW)+\frac{{1}}{2}\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2}dt$
 \end_inset
 
 
@@ -120,7 +133,7 @@ dV & = & (\alpha rB+\mu\Delta S)dt+\sigma\Delta SdW
 \paragraph_spacing onehalf
 \begin_inset Formula 
 \begin{eqnarray}
-dV & = & (\frac{\partial V}{\partial t}+\mu S\frac{\partial V}{\partial S}+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2})dt+\sigma S\frac{\partial V}{\partial S}dW
+dV & = & (\frac{\partial V}{\partial t}+\mu S\frac{\partial V}{\partial S}+\frac{{1}}{2}\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2})dt+\sigma S\frac{\partial V}{\partial S}dW
 \end{eqnarray}
 
 \end_inset
@@ -134,17 +147,22 @@ Equating (1) and (2):
 \begin_inset Formula $\alpha=\frac{{V_{t}+V_{SS}\sigma^{2}S^{2}}}{rB}$
 \end_inset
 
-.
- We also know that 
-\begin_inset Formula $rV=r\alpha B+r\Delta S\Rightarrow$
+ and hence 
+\begin_inset Formula $rV=r\alpha B+r\Delta S$
 \end_inset
 
+ i.e.
+\end_layout
 
-\begin_inset Formula $rV=V_{t}+V_{SS}\sigma^{2}S^{2}+rSV_{S}$
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+rV & = & \frac{{\partial V}}{\partial t}+\frac{{1}}{2}\frac{{\partial^{2}V}}{\partial S^{2}}\sigma^{2}S^{2}+rS\frac{{\partial V}}{\partial S}
+\end{eqnarray}
+
 \end_inset
 
 .
- This is the Black Scholes equation.
 \end_layout
 
 \begin_layout Subsection
@@ -153,21 +171,26 @@ Hedge Portfolio in the BS-economy
 
 \begin_layout Standard
 Black-Scholes equation also implies the risk-free growth of the hedge portfolio.
- This can be shown by deriving black-scholes equation with the hedge-portfolio.
- Consider
+ Consider the hedge-portfolio as 
+\begin_inset Formula $\Pi=V-\Delta S$
+\end_inset
+
+.
+ This would in turn imply:
 \begin_inset Formula $d\Pi=dV-\Delta S$
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
-Using (2),
+Using (2), we obtain:
 \begin_inset Formula $d\Pi=dV-\Delta dS=(\frac{\partial V}{\partial t}+\mu S(\frac{\partial V}{\partial S}-\Delta)+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2})dt+(\sigma S\frac{\partial V}{\partial S}-\Delta)dW$
 \end_inset
 
 .
- Setting the local risk-lessness implies that 
+ Setting local risk-lessness results in 
 \begin_inset Formula $\Delta=\frac{\partial V}{\partial S}$
 \end_inset
 
@@ -176,29 +199,26 @@ Using (2),
 \begin_inset Formula $d\Pi=\Pi rdt\Rightarrow(V-\frac{\partial V}{\partial S}S)r=\frac{\partial V}{\partial t}+\frac{\partial^{2}V}{\partial S^{2}}\sigma^{2}S^{2}$
 \end_inset
 
-i.e.
- the hedge-portfolio must grow at the risk-free rate: 
-\begin_inset Formula 
-\begin{eqnarray}
-d\Pi_{t} & = & \Pi_{t}rdt
-\end{eqnarray}
-
-\end_inset
-
-
+.
 \end_layout
 
 \begin_layout Standard
-What this means is that a delta-neutral strategy (which sets 
+Following no-arbitrage arguments, the hedge-portfolio must grow at the risk-free
+ rate : 
+\begin_inset Formula $d\Pi_{t}=\Pi_{t}rdt.$
+\end_inset
+
+ What it means for the current exercise is that a delta-neutral strategy
+ (which sets 
 \begin_inset Formula $\Delta=\frac{{\partial V}}{\partial S}$
 \end_inset
 
-) would result in growth of hedging-portfolio i.e.
+) would result in growth of hedging-portfolio as
 \begin_inset Formula $\Pi_{t}=\Pi_{0}e^{-rT}$
 \end_inset
 
 .
- This was tested with simulations as part of the exercise.
+ This can be verified with simulations.
  
 \end_layout
 
@@ -207,7 +227,7 @@ Minimizing Volatility
 \end_layout
 
 \begin_layout Standard
-The best to minimize the volatility of 
+The best way to minimize the volatility of 
 \begin_inset Formula $d\Pi$
 \end_inset
 
@@ -216,12 +236,18 @@ The best to minimize the volatility of
 \end_inset
 
  as zero.
- This is what delta-neutral hedging accomplishes.
- What it cannot guarantee is minimizing the volatility of 
+ This leads to the B-S differetional equation and is exactly what a delta-neutra
+l hedging is meant to accomplish.
+ What it cannot guarantee, however, is the minimizing the volatility of
+ 
 \begin_inset Formula $\Pi_{t}.$
 \end_inset
 
- Using directly formulas, 
+ 
+\end_layout
+
+\begin_layout Standard
+Using directly formulas, 
 \begin_inset Formula $\Pi_{t}=P_{t}-N(d_{1})S_{t}=Ke^{-rT}N(d_{2})$
 \end_inset
 
@@ -234,29 +260,38 @@ The best to minimize the volatility of
 \begin_inset Formula $N(d_{2})$
 \end_inset
 
-.
- This can also be verified experimentally.
-\end_layout
+ (this can be experimentally verified).
+ To minimize the volatility of 
+\begin_inset Formula $\Pi_{t}$
+\end_inset
 
-\begin_layout Standard
-To minimize this volatility, let's assume that we deviate from the delta-neutral
- hedging in a way that we maintain 
+, let's assume that we deviate from the delta-neutral hedging in a way that
+ we maintain 
 \begin_inset Formula $\Delta_{t}+\epsilon_{t}=N(d_{1})+\epsilon_{t}$
 \end_inset
 
-stocks.
- This would lead to the price of hedging portfolio move as 
+stocks instead of 
+\begin_inset Formula $\Delta=\frac{{\partial P}}{\partial S}$
+\end_inset
+
+ stocks.
+ This would lead to the hedging portfolio value move as 
 \begin_inset Formula $\overline{\Pi_{t}}=P_{t}-N(d_{1})S_{t}-\epsilon_{t}S_{t}=\Pi_{t}-\epsilon_{t}S_{t}=Ke^{-rT}N(d_{2})-\epsilon_{t}S_{t}$
 \end_inset
 
 .
- We seek modifications to delta-hedging methods and evaluate performance
- of a strategy that doesn't track delta aggressively.
+ 
+\end_layout
+
+\begin_layout Standard
+Modifiying the delta-hedging methods and evaluating performance of a strategy
+ which doesn't track delta as aggressively is commented upon as part of
+ this exercise.
  The effect of this deviation on the volatility of 
 \begin_inset Formula $\Pi_{t}$
 \end_inset
 
-is commented on.
+is computed through simulations.
 \end_layout
 
 \end_body
