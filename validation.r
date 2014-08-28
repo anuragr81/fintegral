@@ -87,13 +87,13 @@ simul <- function(calculate,optionType){
   vol=0.4;
   dt=.01;
   T=1;
-  K=50;
+  K=100;
   r_f=.05;
   tc=0;
   at=0;
-  B=40;
-  minsz=.000001;
-  maxdelta=3;
+  B=99;
+  minsz=.0000001;
+  maxdelta=.02
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
@@ -123,6 +123,7 @@ simul <- function(calculate,optionType){
                                    tc=0,at=at,
                                    pricerFunc=pricer_func,pricerArgs=pricer_args,
                                    minTradesize=minsz,maxTradedelta=maxdelta);
+
 #    print(data.frame(bsprice=hp_deltamethod$bsprice,
 #                     bsdeltas=hp_deltamethod$deltas));
     print(exp(r_f*T)*
