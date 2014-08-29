@@ -76,20 +76,21 @@ Introduction
 
 \begin_layout Standard
 \paragraph_spacing onehalf
-A simple portfolio with long one option and short 
+The current exercise explores the hedging of a simple portfolio with long
+ one option and short 
 \begin_inset Formula $n$
 \end_inset
 
- stocks is explored in the current exercise.
- As the price of a underlying (stock) goes up the option price would increase
- in the portfolio and the short position in stock would become more negative.
- A delta neutral strategy applied on the portfolio would imply selling some
- stock (i.e.
- increasing number of stocks 
+ stocks.
+ Since the price of an underlying (stock) and the price of the call option
+ associated with the underlying rise and fall together - heding the option
+ would involve shorting the stock.
+ A delta neutral strategy would imply selling some more stock when the price
+ of the option goes up (increasing number of 
 \begin_inset Formula $n$
 \end_inset
 
-).
+ stocks shorted ).
  Similarly, if the stock price decreases, the call option price would decrease
  and delta strategy would imply buying some stock (decreasing number of
  stocks 
