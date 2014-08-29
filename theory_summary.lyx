@@ -236,10 +236,8 @@ The best way to minimize the volatility of
 \end_inset
 
  as zero.
- This leads to the B-S differetional equation and is exactly what a delta-neutra
-l hedging is meant to accomplish.
- What it cannot guarantee, however, is the minimizing the volatility of
- 
+ This is exactly what a delta-neutral hedging accomplishes.
+ What it cannot guarantee, however, is minimizing the volatility of 
 \begin_inset Formula $\Pi_{t}.$
 \end_inset
 
@@ -247,7 +245,8 @@ l hedging is meant to accomplish.
 \end_layout
 
 \begin_layout Standard
-Using directly formulas, 
+Using directly formulas, the delta-neutral strategy would have the following
+ payoff: 
 \begin_inset Formula $\Pi_{t}=P_{t}-N(d_{1})S_{t}=Ke^{-rT}N(d_{2})$
 \end_inset
 
@@ -260,7 +259,7 @@ Using directly formulas,
 \begin_inset Formula $N(d_{2})$
 \end_inset
 
- (this can be experimentally verified).
+ (this can also be experimentally verified).
  To minimize the volatility of 
 \begin_inset Formula $\Pi_{t}$
 \end_inset
@@ -271,7 +270,7 @@ Using directly formulas,
 \end_inset
 
 stocks instead of 
-\begin_inset Formula $\Delta=\frac{{\partial P}}{\partial S}$
+\begin_inset Formula $\Delta_{t}=\frac{{\partial P}}{\partial S}$
 \end_inset
 
  stocks.
@@ -284,14 +283,14 @@ stocks instead of
 \end_layout
 
 \begin_layout Standard
-Modifiying the delta-hedging methods and evaluating performance of a strategy
- which doesn't track delta as aggressively is commented upon as part of
- this exercise.
+Modifiying the delta-hedging methods and evaluating performance of such
+ a strategy (that doesn't track delta aggressively) is commented upon as
+ part of this exercise.
  The effect of this deviation on the volatility of 
 \begin_inset Formula $\Pi_{t}$
 \end_inset
 
-is computed through simulations.
+is computed through simulations as well.
 \end_layout
 
 \end_body
