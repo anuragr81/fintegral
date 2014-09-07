@@ -83,6 +83,7 @@ test <- function(){
 }
 
 simul <- function(calculate,optionType){
+
   S_0=100;
   vol=0.4;
   dt=.01;
@@ -93,7 +94,7 @@ simul <- function(calculate,optionType){
   at=0;
   B=99;
   minsz=.0000001;
-  maxdelta=.02
+  maxdelta=.5
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
@@ -117,19 +118,19 @@ simul <- function(calculate,optionType){
     path = generate_path(S_0,r_f,vol,dt,T);
     bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
     
-#    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
+    #    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
     hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                    path_t=path$t,path_values=path$values,
                                    tc=0,at=at,
                                    pricerFunc=pricer_func,pricerArgs=pricer_args,
                                    minTradesize=minsz,maxTradedelta=maxdelta);
-
-#    print(data.frame(bsprice=hp_deltamethod$bsprice,
-#                     bsdeltas=hp_deltamethod$deltas));
+    
+    #    print(data.frame(bsprice=hp_deltamethod$bsprice,
+    #                     bsdeltas=hp_deltamethod$deltas));
     print(exp(r_f*T)*
             (hp_deltamethod$bsprice[1]-hp_deltamethod$deltas[1]*path$values[1])
     )
-#    print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
+    #    print("<<<<<<<<<<<<<<ZERODP>>>>>>>>>>>>>>>>>")
     
     hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
                                     path_t=path$t,path_values=path$values,
@@ -158,15 +159,16 @@ simul <- function(calculate,optionType){
       
     }
   } else {
+  
     sd_dmk=array();
     mean_dmk=array();
     sd_zpk=array();
     mean_zpk=array();
     
-    for ( k in seq(2000)){
+    for ( k in seq(5000)){
       
       path = generate_path(S_0,r_f,vol,dt,T);
-      
+
       hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                      path_t=path$t,path_values=path$values,
                                      tc=0,at=at,
@@ -184,14 +186,17 @@ simul <- function(calculate,optionType){
       sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos);
       mean_zpk[k]=mean(hp_zerodpmethod$hedged_pos);
     }
+    
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
     #cat(out);
     #sink();
     #print(out);
-    par(mfrow=c(1,2));
+    par(mfrow=c(2,2));
     
-    hist(mean_dmk)
-    hist(mean_zpk)
+    hist(mean_dmk,main="Average Position (Delta-Method)")
+    hist(mean_zpk,main="Average Position (Alternate-Method)")
+    hist(sd_dmk,main="Position Stdev (Delta-Method)")
+    hist(sd_zpk,main="Position Stdev (Alternate-Method)")
   }
 }
 
