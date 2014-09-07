@@ -62,7 +62,7 @@ hedged_position <- function (path_t,path_values,
     
     if (zp_delta>maxTradedelta){
       # we short only maxTradeDelta
-      print("zp_delta>maxTradedelta")
+#      print("zp_delta>maxTradedelta")
       nShortedStocks=nShortedStocks+maxTradedelta;
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
@@ -72,7 +72,7 @@ hedged_position <- function (path_t,path_values,
     
     if (zp_delta < -maxTradedelta){
       # we short only -maxTradedelta
-      print("zp_delta<maxTradedelta")
+#      print("zp_delta<maxTradedelta")
       nShortedStocks=nShortedStocks-maxTradedelta;
       hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
@@ -86,8 +86,8 @@ hedged_position <- function (path_t,path_values,
     display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
     
   } # end for
-  print(paste("len(hedged_pos)=",length(hedged_pos),"len(nstocks)=",length(nstocks),
-              "len(bsdelta)=",length(bs$delta),"len(bsprice)=",length(bs$price)))
+#  print(paste("len(hedged_pos)=",length(hedged_pos),"len(nstocks)=",length(nstocks),
+#              "len(bsdelta)=",length(bs$delta),"len(bsprice)=",length(bs$price)))
   return(data.frame(hedged_pos=hedged_pos,nstocks=nstocks,t=path_t,deltas=bs$delta,bsprice=bs$price));
 }
 
