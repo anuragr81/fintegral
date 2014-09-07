@@ -27,60 +27,69 @@ display<- function(S_0,K,B,r_f,vol,at,tc,dt,T,rerun,calculate,minsz,maxdelta,opt
     if (calculate==0){
       path = generate_path(S_0,r_f,vol,dt,T);
       
-      hp_notcdeltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
-                                         path_t=path$t,path_values=path$values,
-                                         tc=tc,at=at,
-                                         pricerFunc=pricer_func,pricerArgs=pricer_args,
-                                         minTradesize=minsz,maxTradedelta=maxdelta);
+      hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
+                                     path_t=path$t,path_values=path$values,
+                                     tc=0,at=at,
+                                     pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                     minTradesize=minsz,maxTradedelta=maxdelta);
       
-      hp_notc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
-                              path_t=path$t,path_values=path$values,
-                              tc=tc,at=at,
-                              pricerFunc=pricer_func,pricerArgs=pricer_args,
-                              minTradesize=minsz,maxTradedelta=maxdelta);
+      hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
+                                      path_t=path$t,path_values=path$values,
+                                      tc=0,at=at,
+                                      pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                      minTradesize=minsz,maxTradedelta=maxdelta);
       
-      #    hp_tc=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,path_t=path$t,path_values=path$values,tc=tc,at=at,pricerFunc=pricer_func,pricerArgs=pricer_args,minTradesize=minsz,maxTradedelta=maxdelta);
+      par(mfrow=c(2,2));
       
-      show_deltas (t=hp_notc$t,
-                   path_values=path$values,
-                   notc_deltas=hp_notc$deltas,
-                   notc_hedged_pos=hp_notc$hedged_pos,
-                   tc_hedged_pos=hp_notcdeltamethod$hedged_pos);
+      plot(path$t,xlab="Time",ylab='Stock Price',path$values,type='l')
+      plot(path$t,xlab="Time",ylab='Delta of Call',hp_deltamethod$deltas,type='l')
+      
+      show_comparison (t=hp_deltamethod$t,
+                       regular=(hp_zerodpmethod$nstocks),
+                       special=(hp_deltamethod$nstocks),
+                       tagname="ShortedStocks");
+      
+      show_comparison (t=hp_deltamethod$t,
+                       regular=hp_zerodpmethod$hedged_pos,
+                       special=hp_deltamethod$hedged_pos,
+                       tagname="Net PNL");
       
     } else
     {
       
-      stdev_zerodp=array();
-      mean_zerodp=array();
-      stdev_delta=array();
-      mean_delta=array();
+      sd_dmk=array();
+      mean_dmk=array();
+      sd_zpk=array();
+      mean_zpk=array();
       
       for ( k in seq(500)){
+        
         path = generate_path(S_0,r_f,vol,dt,T);
-        pos_zerodp=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
-                                           path_t=path$t,path_values=path$values,
-                                           tc=tc,at=at,
-                                           pricerFunc=pricer_func,pricerArgs=pricer_args,
-                                           minTradesize=minsz,maxTradedelta=maxdelta);
         
-        stdev_zerodp[k]=sd(pos_zerodp$hedged_pos);
-        mean_zerodp[k]=mean(pos_zerodp$hedged_pos);
-  
-        pos_delta=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
-                                path_t=path$t,path_values=path$values,
-                                tc=tc,at=at,
-                                pricerFunc=pricer_func,pricerArgs=pricer_args,
-                                minTradesize=minsz,maxTradedelta=maxdelta);
+        hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
+                                       path_t=path$t,path_values=path$values,
+                                       tc=0,at=at,
+                                       pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                       minTradesize=minsz,maxTradedelta=maxdelta);
         
-        stdev_delta[k]=sd(pos_delta$hedged_pos);
-        mean_delta[k]=mean(pos_delta$hedged_pos);
+        hp_zerodpmethod=hedged_position(stepFunc=num_stocks_to_short_zerodp_g,checkArgs=check_args,
+                                        path_t=path$t,path_values=path$values,
+                                        tc=0,at=at,
+                                        pricerFunc=pricer_func,pricerArgs=pricer_args,
+                                        minTradesize=minsz,maxTradedelta=maxdelta);
         
+        sd_dmk[k]=sd(hp_deltamethod$hedged_pos);
+        mean_dmk[k]=mean(hp_deltamethod$hedged_pos);
+        sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos);
+        mean_zpk[k]=mean(hp_zerodpmethod$hedged_pos);
       }
+      
       par(mfrow=c(2,2));
-      hist(stdev_delta);
-      hist(mean_delta);
-      hist(stdev_zerodp);
-      hist(mean_zerodp);
+      
+      hist(mean_dmk,main="Average Position (Delta-Method)")
+      hist(mean_zpk,main="Average Position (Alternate-Method)")
+      hist(sd_dmk,main="Position Stdev (Delta-Method)")
+      hist(sd_zpk,main="Position Stdev (Alternate-Method)")
       
     } # {end: calcualte}
     
