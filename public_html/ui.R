@@ -23,7 +23,7 @@ shinyUI(
                       10, min = 0, max = 100, step = .01),
          numericInput("at", "Amivest Ratio",
                       0, min = 0, max = 100, step = .01),
-         numericInput("tc", "Transaction costs (fraction)",
+         numericInput("tc", "Transaction cost (per-trade)",
                       0, min = 0, max = 100, step = .01),
          numericInput("minsz", "minimum trade size",
                       .001, min = 0, max = 1000, step = .01),
