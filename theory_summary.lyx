@@ -283,9 +283,9 @@ stocks instead of
 \end_layout
 
 \begin_layout Standard
-Modifiying the delta-hedging methods and evaluating performance of such
- a strategy (that doesn't track delta aggressively) is commented upon as
- part of this exercise.
+Modifying the delta-hedging methods and evaluating performance of such a
+ strategy (that doesn't track delta aggressively) is commented upon as part
+ of this exercise.
  The effect of this deviation on the volatility of 
 \begin_inset Formula $\Pi_{t}$
 \end_inset
