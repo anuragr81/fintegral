@@ -1,3 +1,8 @@
+------------------------
+
+
+------------------------
+
 Salut Anurag,
  
 Uwe has come up with a nice checklist that we recommend to go through in order to detect errors or implementation bugs (see below). I suggest you run the checks and then produce the plots mentioned below in the "analysis section". Let me know if you manage to produce them until Thu afternoon so I could possibly include them into my ETH presentation (purely voluntarily if you are interested to be quoted with your study).
