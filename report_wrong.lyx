@@ -85,7 +85,7 @@ The average hedge-porfolio value should be close to
  .
  After running 10,000 paths, the graph looks like the following.
  The mean of the final position is -46.62.
- After 100,000 simulations, this comes to .
+ After 100,000 simulations, this comes to -46.92.
 \end_layout
 
 \end_body
