@@ -40,50 +40,63 @@ source("display.r")
 # The idea that I am now thinking is the deviation from deltas that would 
 # affect the overall variance of \Pi.
 
-test <- function(){
+test01 <- function(){
   S_0=100;
+  r_f=.05;
   vol=0.4;
   dt=.001;
   T=1;
-  K=50;
+  
+  N<-500000
+  path_k=array();
+  
+  for ( k in seq(N)){
+    path = generate_path(S_0,r_f,vol,dt,T);  
+    path_k[k]=(path$values[length(path$values)])
+  }
+  
+  hist(path_k,main="Final Stock Price Values")
+  
+  print(paste("mean S_T=",mean(path_k)))
+  print(paste("var(log(S_T))=",var(log(path_k))))
+  
+  
+  print(paste("theoretical mean S_T=",S_0*exp(r_f*T)));
+  print(paste("theoretical var(log(S_T))=",vol*vol*T));
+}
+
+test02 <- function (){
+  S_0=100;
   r_f=.05;
-  tc=0;
-  at=0;
-  B=40;
-  minsz=.000001;
-  maxdelta=3;
+  vol=0.4;
+  dt=.001;
+  K=100;
+  T=1;
+  
+  N<-5000
+  payoff_k=array();
+  
+  for ( k in seq(N)){
+    path = generate_path(S_0,r_f,vol,dt,T);
+    payoff_k[k]=max(path$values[length(path$values)]-K,0);  
+  }
+  par(mfrow=c(1,1));
+  
+  hist(payoff_k,main="Option PayOff")
+  print(paste("Monte-Carlo option price =",mean(payoff_k)*exp(-r_f*T)));  
+  
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
-  pricer_func=bscallprice;
+  
   pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
-  check_args= checkargs_bscallpricer;
-  out=array();
-  par(mfrow=c(1,1));
-  for (i in seq(1,10)){
-    path = generate_path(S_0,r_f,vol,dt,T);
-    bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
-    #dSs=diff(path$values);
-    #dPs=diff(bs$price);
-    #dPis=dPs-bs$delta[1:length(bs$delta)-1]*dSs;
-    t=T-dt;
-    S_t=path$values[length(path$values)];
-    Pi=bs$price[length(bs$price)]-bs$delta[length(bs$delta)]*S_t;  
-    numerator=log(S_t/K) + (r_f+(vol*vol)*0.5)*(T-t);
-    denominator=vol*sqrt(T-t);
-    d1=(numerator/denominator);
-    d2=d1-vol*sqrt(T-t);
-    out[i]=-Pi;
-  }
+  bs=bscallprice(S_0=path$values,t=path$t,pricer_args);
   
-  hist(out);
-  print(mean(out));
-  print(sd(out));
-  
+  print(paste("theoretical BS option price =",bs$price[1]));  
 }
 
 simul <- function(calculate,optionType){
-
+  
   S_0=100;
   vol=0.4;
   dt=.01;
@@ -159,16 +172,16 @@ simul <- function(calculate,optionType){
       
     }
   } else {
-  
+    
     sd_dmk=array();
     mean_dmk=array();
     sd_zpk=array();
     mean_zpk=array();
     
-    for ( k in seq(5000)){
+    for ( k in seq(100000)){
       
       path = generate_path(S_0,r_f,vol,dt,T);
-
+      
       hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                      path_t=path$t,path_values=path$values,
                                      tc=0,at=at,
@@ -182,9 +195,12 @@ simul <- function(calculate,optionType){
                                       minTradesize=minsz,maxTradedelta=maxdelta);
       
       sd_dmk[k]=sd(hp_deltamethod$hedged_pos);
-      mean_dmk[k]=mean(hp_deltamethod$hedged_pos);
+      #mean_dmk[k]=mean(hp_deltamethod$hedged_pos);
+      mean_dmk[k]=(hp_deltamethod$hedged_pos[length(hp_deltamethod$hedged_pos)]);
+      
       sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos);
       mean_zpk[k]=mean(hp_zerodpmethod$hedged_pos);
+    
     }
     
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
@@ -192,7 +208,7 @@ simul <- function(calculate,optionType){
     #sink();
     #print(out);
     par(mfrow=c(2,2));
-    
+    print(paste("Mean-dmk:",mean(mean_dmk)))
     hist(mean_dmk,main="Average Position (Delta-Method)")
     hist(mean_zpk,main="Average Position (Alternate-Method)")
     hist(sd_dmk,main="Position Stdev (Delta-Method)")
