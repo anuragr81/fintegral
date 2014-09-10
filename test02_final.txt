@@ -1,0 +1,5 @@
+[1] "sd(callpayoff_k)= 31.8117213164173"
+[1] "Monte-Carlo call-option price = 17.4896755410705"
+[1] "Monte-Carlo put-option price = 12.8769669719843"
+[1] "theoretical BS CallOption price = 18.0229514502167"
+[1] "theoretical BS PutOption price = 13.1458939002881"
