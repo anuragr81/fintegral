@@ -15,7 +15,7 @@ show_comparison <- function(t,regular,special,tagname) {
   #      col=cl, lty=c(1,2));
   
   plot_ylim<-c(min(min(regular),min(special)),max(max(regular),max(special)));  
-  plot(0,0,xlab="Time", ylab=tagname, xlim=c(0,max(t)),ylim=plot_ylim);
+  plot(0,0,main=tagname,xlab="Time", ylab=tagname, xlim=c(0,max(t)),ylim=plot_ylim);
   cl<-rainbow(2);
   lines(t,regular,col=cl[1],lty=1,type='s');
   lines(t,special,col=cl[2],lty=2,type='s');

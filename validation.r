@@ -73,7 +73,7 @@ test02 <- function (){
   K=100;
   T=1;
   
-  N<-200000
+  N<-1000000
   
   callpayoff_k=array();
   putpayoff_k=array();
@@ -181,24 +181,27 @@ simul <- function(calculate,optionType){
                                     pricerFunc=pricer_func,pricerArgs=pricer_args,
                                     minTradesize=minsz,maxTradedelta=maxdelta);
     if(TRUE){
-      par(mfrow=c(2,2));
+      par(mfrow=c(3,2));
       
-      plot(path$t,xlab="Time",ylab='Stock Price',path$values,type='l')
-      plot(path$t,xlab="Time",ylab='Delta of Call',hp_deltamethod$deltas,type='l')
+      plot(path$t,main="Stock Price", xlab="Time",ylab='Stock Price',path$values,type='l')
+      plot(path$t,main="Derivative Price", xlab="Time",ylab='Derivative Price',bs$price,type='l')
+      
+      plot(path$t,main="Delta", xlab="Time",ylab='Delta',hp_deltamethod$deltas,type='l')
       
       #      show_comparison (t=hp_deltamethod$t[1:length(hp_deltamethod$t)-1],
       #                   regular_hedged_pos=diff(hp_zerodpmethod$nstocks),
       #                   special_hedged_pos=diff(hp_deltamethod$nstocks),
       #                   tagname="Change in ShortedStocks");
+
       show_comparison (t=hp_deltamethod$t,
                        regular=(hp_zerodpmethod$nstocks),
                        special=(hp_deltamethod$nstocks),
-                       tagname="ShortedStocks");
+                       tagname="Number of Stocks Shorted (n)");
       
       show_comparison (t=hp_deltamethod$t,
                        regular=hp_zerodpmethod$hedged_pos,
                        special=hp_deltamethod$hedged_pos,
-                       tagname="Net PNL");
+                       tagname="Hedge Portfolio Value (P-nS)");
       
     }
   } else {

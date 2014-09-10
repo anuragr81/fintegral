@@ -26,6 +26,7 @@ display<- function(S_0,K,B,r_f,vol,at,tc,dt,T,rerun,calculate,minsz,maxdelta,opt
     
     if (calculate==0){
       path = generate_path(S_0,r_f,vol,dt,T);
+      bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
       
       hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                      path_t=path$t,path_values=path$values,
@@ -39,20 +40,22 @@ display<- function(S_0,K,B,r_f,vol,at,tc,dt,T,rerun,calculate,minsz,maxdelta,opt
                                       pricerFunc=pricer_func,pricerArgs=pricer_args,
                                       minTradesize=minsz,maxTradedelta=maxdelta);
       
-      par(mfrow=c(2,2));
+      par(mfrow=c(3,2));
       
-      plot(path$t,xlab="Time",ylab='Stock Price',path$values,type='l')
-      plot(path$t,xlab="Time",ylab='Delta of Call',hp_deltamethod$deltas,type='l')
+      plot(path$t,main="Stock Price", xlab="Time",ylab='Stock Price',path$values,type='l')
+      plot(path$t,main="Derivative Price", xlab="Time",ylab='Derivative Price',bs$price,type='l')
+      
+      plot(path$t,main="Delta", xlab="Time",ylab='Delta',hp_deltamethod$deltas,type='l')
       
       show_comparison (t=hp_deltamethod$t,
                        regular=(hp_zerodpmethod$nstocks),
                        special=(hp_deltamethod$nstocks),
-                       tagname="ShortedStocks");
+                       tagname="Number of Stocks Shorted (n)");
       
       show_comparison (t=hp_deltamethod$t,
                        regular=hp_zerodpmethod$hedged_pos,
                        special=hp_deltamethod$hedged_pos,
-                       tagname="Net PNL");
+                       tagname="Hedge Portfolio Value (P-nS)");
       
     } else
     {
