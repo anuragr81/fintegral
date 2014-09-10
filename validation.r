@@ -73,26 +73,53 @@ test02 <- function (){
   K=100;
   T=1;
   
-  N<-5000
-  payoff_k=array();
+  N<-500000
+  callpayoff_k=array();
+  putpayoff_k=array();
+  ncallpayoff_k=array();
+  nputpayoff_k=array();
+  dS=.01;
   
   for ( k in seq(N)){
     path = generate_path(S_0,r_f,vol,dt,T);
-    payoff_k[k]=max(path$values[length(path$values)]-K,0);  
+    callpayoff_k[k]=max(path$values[length(path$values)]-K,0);  
+    putpayoff_k[k]=max(K-path$values[length(path$values)],0);    
   }
-  par(mfrow=c(1,1));
+
+  for ( k in seq(N)){
+    npath = generate_path(S_0+dS,r_f,vol,dt,T);
+    ncallpayoff_k[k]=max(npath$values[length(npath$values)]-K,0);  
+    nputpayoff_k[k]=max(K-npath$values[length(npath$values)],0);
+  }
   
-  hist(payoff_k,main="Option PayOff")
-  print(paste("Monte-Carlo option price =",mean(payoff_k)*exp(-r_f*T)));  
+  par(mfrow=c(1,2));
+  
+  hist(callpayoff_k,main="CallOption PayOff")
+  hist(putpayoff_k,main="PutOption PayOff")
+  
+  print(paste("Monte-Carlo call-option price =",mean(callpayoff_k)*exp(-r_f*T)));
+  print(paste("Monte-Carlo ncall-option price =",mean(ncallpayoff_k)*exp(-r_f*T)));
+  
+  print(paste("Monte-Carlo call-option delta =",(mean(ncallpayoff_k)-mean(callpayoff_k)/dS)*exp(-r_f*T)));  
+  
+  print(paste("Monte-Carlo put-option price =",mean(putpayoff_k)*exp(-r_f*T)));
+  print(paste("Monte-Carlo nput-option price =",mean(nputpayoff_k)*exp(-r_f*T)));
+  print(paste("Monte-Carlo call-option delta =",(mean(nputpayoff_k)-mean(putpayoff_k)/dS)*exp(-r_f*T)));
   
   nh=T/dt;
+  
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
   
   pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K);
   bs=bscallprice(S_0=path$values,t=path$t,pricer_args);
   
-  print(paste("theoretical BS option price =",bs$price[1]));  
+  print(paste("theoretical BS CallOption price =",bs$price[1]));  
+  print(paste("theoretical BS CallOption delta =",bs$delta[1]));  
+  
+  print(paste("theoretical BS PutOption price =",bs$price[1]+K*exp(-r_f*T)-path$values[1]));
+  print(paste("theoretical BS PutOption price =",1-bs$delta[1]));
+  
 }
 
 simul <- function(calculate,optionType){
@@ -200,7 +227,7 @@ simul <- function(calculate,optionType){
       
       sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos);
       mean_zpk[k]=mean(hp_zerodpmethod$hedged_pos);
-    
+      
     }
     
     #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
