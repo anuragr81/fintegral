@@ -169,11 +169,12 @@ test03 <- function(){
   
 }
 
-simul <- function(calculate,optionType,dt){
+simul <- function(calculate,optionType,vol){
   
   S_0=100;
-  vol=0.4;
-#  dt=.05;
+  #vol=0.4;
+  vol=vol;
+  dt=.01;
   T=1;
   K=100;
   r_f=.05;
@@ -255,7 +256,7 @@ simul <- function(calculate,optionType,dt){
     sd_zpk=array();
     mean_zpk=array();
     
-    for ( k in seq(10000)){
+    for ( k in seq(100000)){
       
       path = generate_path(S_0,r_f,vol,dt,T);
       
@@ -290,7 +291,7 @@ simul <- function(calculate,optionType,dt){
     hist(mean_zpk,main="Average Position (Alternate-Method)")
     hist(sd_dmk,main="Position Stdev (Delta-Method)")
     hist(sd_zpk,main="Position Stdev (Alternate-Method)")
-    return(data.frame(dt=dt,sd_zpk=mean(sd_zpk),sd_dmk=mean(sd_dmk)))
+    return(data.frame(vol=vol,sd_zpk=mean(sd_zpk),sd_dmk=mean(sd_dmk)))
   }
 }
 

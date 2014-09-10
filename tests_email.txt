@@ -24,7 +24,7 @@ Test01:
 Test02:
 -          Verify that the simulated option value is equal to the value of the same option using the Black-Scholes formula, for both call and put.
 -          Verify that the simulated option delta is equal to the delta of the same option using the Black-Scholes formula, for both call and put.
--          Verify that the simulated option value for path-independent options (such as call and put) are independent of the discretization over time (pending)
+-          Verify that the simulated option value for path-independent options (such as call and put) are independent of the discretization over time 
 
 
 Test03:
