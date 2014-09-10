@@ -64,6 +64,10 @@
 Test 01
 \end_layout
 
+\begin_layout Subsection
+Lognormal Distribution Tests
+\end_layout
+
 \begin_layout Standard
 The stock price is meant to be lognormally distributed.
  The following code plots and calculates theoretical vs numerical values
@@ -121,12 +125,19 @@ After running 500K runs (no antithetic technique employed), the values obtained
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename test01_3.png
-	scale 40
+	filename test02_1.png
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Visual Inspection
+\end_layout
+
+\begin_layout Standard
+The stock-prices were all positive.
 \end_layout
 
 \begin_layout Section
@@ -134,7 +145,62 @@ Test 02
 \end_layout
 
 \begin_layout Standard
-Following test 
+The monte-carlo technique simply calculated the average of payoff 
+\begin_inset Formula $max(S_{T}-K,0)$
+\end_inset
+
+for call and 
+\begin_inset Formula $max(K-S_{T},0)$
+\end_inset
+
+for put.
+ The results are as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename test02_2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Widening the interval of simulatons 
+\begin_inset Formula $dt$
+\end_inset
+
+ slows the convergence of the Monte-carlo simulations.
+ However, the converged values are unaffected by the choice of 
+\begin_inset Formula $dt.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Test 03
+\end_layout
+
+\begin_layout Standard
+The price of a down-and-out barrier option does converge to the plain-vanilla
+ option for low barriers.
+ Following chart demonstrates this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename test03.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The implementation does not use the monte-carlo approach for valuing barriers.
+ The up-and-out option was not implemented as part of this exercise.
 \end_layout
 
 \end_body

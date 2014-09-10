@@ -123,7 +123,6 @@ test02 <- function (){
   
   print(paste("theoretical BS PutOption price =",bs$price[1]+K*exp(-r_f*T)-path$values[1]));
   #print(paste("theoretical BS PutOption delta =",bs$delta[1]-1));
-  
 }
 
 test03 <- function(){
@@ -132,7 +131,7 @@ test03 <- function(){
   vol=0.4;
   dt=.01;
   T=1;
-  K=10;
+  K=100;
   r_f=.05;
   
   nh=T/dt;
@@ -163,21 +162,18 @@ test03 <- function(){
   lines(B_values,do_k,col=cl[1],lty=1)
   lines(B_values,bs_k,col=cl[2],lty=2) 
   legend(B_values[1],.3*mean(plot_ylim),c(expression("Down-and-out"),expression("Plain-Vanilla Call")),col=cl, lty=c(1,2));
-  #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
-  #cat(out);
-  #sink();
   
-  filename=("file://c:/local_files/anurag/model_validation/liquidity_task/PvsB.csv");
-  dat=(data.frame(B=B_values,P=do_k))
-  write.csv(dat,file=filename);
+#  filename=("file://c:/local_files/anurag/model_validation/liquidity_task/PvsB.csv");
+#  dat=(data.frame(B=B_values,P=do_k))
+#  write.csv(dat,file=filename);
   
 }
 
-simul <- function(calculate,optionType){
+simul <- function(calculate,optionType,dt){
   
   S_0=100;
   vol=0.4;
-  dt=.01;
+#  dt=.05;
   T=1;
   K=100;
   r_f=.05;
@@ -185,7 +181,7 @@ simul <- function(calculate,optionType){
   at=0;
   B=99;
   minsz=.0000001;
-  maxdelta=.5
+  maxdelta=100
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
@@ -245,7 +241,7 @@ simul <- function(calculate,optionType){
                        regular=(hp_zerodpmethod$nstocks),
                        special=(hp_deltamethod$nstocks),
                        tagname="Number of Stocks Shorted (n)");
-      
+      #print(paste("var(hedged_error)=",var(hp_zerodpmethod$hedged_pos-hp_zerodpmethod$hedged_pos[1])))
       show_comparison (t=hp_deltamethod$t,
                        regular=hp_zerodpmethod$hedged_pos,
                        special=hp_deltamethod$hedged_pos,
@@ -259,7 +255,7 @@ simul <- function(calculate,optionType){
     sd_zpk=array();
     mean_zpk=array();
     
-    for ( k in seq(100000)){
+    for ( k in seq(10000)){
       
       path = generate_path(S_0,r_f,vol,dt,T);
       
@@ -275,11 +271,11 @@ simul <- function(calculate,optionType){
                                       pricerFunc=pricer_func,pricerArgs=pricer_args,
                                       minTradesize=minsz,maxTradedelta=maxdelta);
       
-      sd_dmk[k]=sd(hp_deltamethod$hedged_pos);
+      sd_dmk[k]=sd(hp_deltamethod$hedged_pos-hp_deltamethod$hedged_pos[1]);
       #mean_dmk[k]=mean(hp_deltamethod$hedged_pos);
       mean_dmk[k]=(hp_deltamethod$hedged_pos[length(hp_deltamethod$hedged_pos)]);
       
-      sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos);
+      sd_zpk[k]=sd(hp_zerodpmethod$hedged_pos-hp_zerodpmethod$hedged_pos[1]);
       mean_zpk[k]=mean(hp_zerodpmethod$hedged_pos);
       
     }
@@ -289,11 +285,12 @@ simul <- function(calculate,optionType){
     #sink();
     #print(out);
     par(mfrow=c(2,2));
-    print(paste("Mean-dmk:",mean(mean_dmk)))
+#    print(paste("Mean-dmk:",mean(mean_dmk)))
     hist(mean_dmk,main="Average Position (Delta-Method)")
     hist(mean_zpk,main="Average Position (Alternate-Method)")
     hist(sd_dmk,main="Position Stdev (Delta-Method)")
     hist(sd_zpk,main="Position Stdev (Alternate-Method)")
+    return(data.frame(dt=dt,sd_zpk=mean(sd_zpk),sd_dmk=mean(sd_dmk)))
   }
 }
 
