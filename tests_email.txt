@@ -28,10 +28,10 @@ Test02:
 
 
 Test03:
--          For barrier and touch options with path-dependent barriers ensure that continuity correction is in place (pending)
--          For barrier options take the example of a down-and-out call with the barrier below strike and an up and out call with the barrier above strike (not done)
--          Verify that for barrier options value and delta are equal to the Black-Scholes closed form solution.
--          Verify with graphical visualization that the value of the barrier option converges monotone to the value of the corresponding vanilla option as the barrier moves far away
+-          For barrier and touch options with path-dependent barriers ensure that continuity correction is in place (done)
+-          For barrier options take the example of a down-and-out call with the barrier below strike and an up and out call with the barrier above strike (done)
+-          Verify that for barrier options value and delta are equal to the Black-Scholes closed form solution (done)
+-          Verify with graphical visualization that the value of the barrier option converges monotone to the value of the corresponding vanilla option as the barrier moves far away (done)
 -          Verify that the variance of the hedge error decreases as the time steps increase
 -          Test the impact of the hedge error by increasing the volatility (e.g. linearly) over the time to maturity.
 

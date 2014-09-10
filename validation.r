@@ -145,7 +145,7 @@ test03 <- function(){
   do_k=array();
   bs_k=array();
   for (b in B_values){
-    pricer_args = data.frame(r_f=r_f,vol=vol,dt=dt,T=T,K=K,B=b,tol=.001)
+    pricer_args = data.frame(r_f=r_f,vol=vol,dt=dt,T=T,K=K,B=b,tol=.001,m=nh)
     doprice=downandout_callprice(S_0=S_0,t=0,pricer_args);
     do_k[k]=((doprice$price))
     bs=bscallprice(S_0=S_0,t=0,pricer_args);
@@ -160,10 +160,16 @@ test03 <- function(){
        xlim=c(0,max(B_values)),ylim=plot_ylim);
   
   cl<-rainbow(2);
-  print(do_k)
   lines(B_values,do_k,col=cl[1],lty=1)
   lines(B_values,bs_k,col=cl[2],lty=2) 
   legend(B_values[1],.3*mean(plot_ylim),c(expression("Down-and-out"),expression("Plain-Vanilla Call")),col=cl, lty=c(1,2));
+  #sink("file://C:/Users/anuragr/Desktop/model_validation/output.txt");
+  #cat(out);
+  #sink();
+  
+  filename=("file://c:/local_files/anurag/model_validation/liquidity_task/PvsB.csv");
+  dat=(data.frame(B=B_values,P=do_k))
+  write.csv(dat,file=filename);
   
 }
 
@@ -194,7 +200,7 @@ simul <- function(calculate,optionType){
     check_args= checkargs_bscallpricer;
   }else{
     pricer_func=downandout_callprice;
-    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B,tol=.001)
+    pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,dt=dt,T=T,K=K,B=B,tol=.001,m=nh)
     check_args = checkargs_downandout_callpricer;
   }
   

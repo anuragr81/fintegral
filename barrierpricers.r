@@ -32,13 +32,17 @@ value_downandout_exp <- function(S_0,t,pricerArgs) {
   r_f=pricerArgs$r_f;
   vol=pricerArgs$vol;
   B=pricerArgs$B;
+  m=pricerArgs$m;
   
   cbs=bscallprice(S_0=S_0,t=t,pricerArgs=pricerArgs);
   cbsi=bscallprice(S_0=(B*B/S_0),t=t,pricerArgs=pricerArgs);
   n1=cbs$price;
   n2=((S_0/B)^(1-(2*r_f/(vol*vol)))*cbsi$price)
   nr=(n1-n2);
-  return(nr*((sign(nr)+1)/2))
+  zeroed=(nr*((sign(nr)+1)/2));
+  #continuity_factor=exp(sign(B-S_0)*vol*.5826*sqrt(T/m));
+  continuity_factor=1;
+  return(zeroed*continuity_factor);  
   #ts.plot(S_0,ts((S_0[1]^2)/S_0)) # <-- beauty
   
 }
@@ -56,9 +60,14 @@ checkargs_downandout_callpricer<- function(pricerArgs){
   if (min(pricerArgs$vol)<0){
     return(FALSE);
   }
+  
+  if (min(pricerArgs$m)<0){
+    return(FALSE);
+  }
+  
   if (min(pricerArgs$T)<=0){
     return(FALSE);
-  }  
+  } 
   return(TRUE);
 }
 
