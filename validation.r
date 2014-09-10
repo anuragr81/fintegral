@@ -73,12 +73,13 @@ test02 <- function (){
   K=100;
   T=1;
   
-  N<-500000
+  N<-200000
+  
   callpayoff_k=array();
   putpayoff_k=array();
   ncallpayoff_k=array();
   nputpayoff_k=array();
-  dS=.01;
+  dS=.001;
   
   for ( k in seq(N)){
     path = generate_path(S_0,r_f,vol,dt,T);
@@ -97,14 +98,16 @@ test02 <- function (){
   hist(callpayoff_k,main="CallOption PayOff")
   hist(putpayoff_k,main="PutOption PayOff")
   
+  print(paste("sd(callpayoff_k)=",sd(callpayoff_k)))
+  
   print(paste("Monte-Carlo call-option price =",mean(callpayoff_k)*exp(-r_f*T)));
   print(paste("Monte-Carlo ncall-option price =",mean(ncallpayoff_k)*exp(-r_f*T)));
   
-  print(paste("Monte-Carlo call-option delta =",(mean(ncallpayoff_k)-mean(callpayoff_k)/dS)*exp(-r_f*T)));  
+  print(paste("Monte-Carlo call-option delta =",(((mean(ncallpayoff_k)-mean(callpayoff_k))/dS)*exp(-r_f*T))));  
   
   print(paste("Monte-Carlo put-option price =",mean(putpayoff_k)*exp(-r_f*T)));
   print(paste("Monte-Carlo nput-option price =",mean(nputpayoff_k)*exp(-r_f*T)));
-  print(paste("Monte-Carlo call-option delta =",(mean(nputpayoff_k)-mean(putpayoff_k)/dS)*exp(-r_f*T)));
+  print(paste("Monte-Carlo put-option delta =",(((mean(nputpayoff_k)-mean(putpayoff_k))/dS)*exp(-r_f*T))));
   
   nh=T/dt;
   
@@ -118,7 +121,7 @@ test02 <- function (){
   print(paste("theoretical BS CallOption delta =",bs$delta[1]));  
   
   print(paste("theoretical BS PutOption price =",bs$price[1]+K*exp(-r_f*T)-path$values[1]));
-  print(paste("theoretical BS PutOption price =",1-bs$delta[1]));
+  print(paste("theoretical BS PutOption delta =",bs$delta[1]-1));
   
 }
 
