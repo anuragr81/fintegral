@@ -1,0 +1,59 @@
+------------------------
+
+
+------------------------
+
+Salut Anurag,
+ 
+Uwe has come up with a nice checklist that we recommend to go through in order to detect errors or implementation bugs (see below). I suggest you run the checks and then produce the plots mentioned below in the "analysis section". Let me know if you manage to produce them until Thu afternoon so I could possibly include them into my ETH presentation (purely voluntarily if you are interested to be quoted with your study).
+ 
+Other than that I have a short list of additional tests you could run which I'd like to send you once you have successfully completed the tests.
+ 
+Best regards & speak soon,
+Joerg & Uwe
+ 
+ 
+Assuming a Black-Scholes model.
+ 
+Test01:
+
+-          Verify that the mean of the final spot price is equal to the forward (X)
+-          Verify that the variance of log spot final is equal to volatility squared x time to maturity (X)
+-          Visually inspect 20 spot price paths (X)
+-          Verify that all spot prices are non-negative (X)
+
+
+Test02:
+
+-          Verify that the simulated option value is equal to the value of the same option using the Black-Scholes formula, for both call and put.
+-          Verify that the simulated option delta is equal to the delta of the same option using the Black-Scholes formula, for both call and put.
+-          Verify that the simulated option value for path-independent options (such as call and put) are independent of the discretization over time.
+
+
+Test03:
+
+-          Verify that the variance of the hedge error decreases as the time steps increase
+-          Test the impact of the hedge error by increasing the volatility (e.g. linearly) over the time to maturity.
+
+
+
+Test04:
+
+-          For barrier and touch options with path-dependent barriers ensure that continuity correction is in place.
+-          For barrier options take the example of a down-and-out call with the barrier below strike and an up and out call with the barrier above strike.
+-          Verify that for barrier options value and delta are equal to the Black-Scholes closed form solution.
+-          Verify with graphical visualization that the value of the barrier option converges monotone to the value of the corresponding vanilla option as the barrier moves far away
+ 
+
+Use some different market data and contract data assumptions for all of the above including a low vol (5%) and a high vol (50%) scenario. Document all test results in a log file.
+ 
+After the Monte Carlo simulation hedge engine has passed all the tests, the actual analysis can be performed, which includes:
+ 
+Impact of the time to re-hedge (Q:for barrier options as well?)
+Impact of bid offer spreads in spot trading (Q: code change needed. OK?)
+Impact of constraints such as min/max amounts at a time or per day, bounds on delta/gamma/leverage, no shortselling.
+All impacts should show at least the mean and variance of the hedge error (simulated portfolio value minus Black-Scholes value), possibly also higher moments skew and kurtosis.
+Impact of stochastic volatility
+ 
+On the simulation tool on the web: label axes so one can see which graph shows which result.
+ 
