@@ -66,7 +66,7 @@ test01 <- function(){
 }
 
 test02 <- function (){
-
+  
   S_0=100;
   r_f=.05;
   vol=0.4;
@@ -87,7 +87,7 @@ test02 <- function (){
     callpayoff_k[k]=max(path$values[length(path$values)]-K,0);  
     putpayoff_k[k]=max(K-path$values[length(path$values)],0);    
   }
-
+  
   #for ( k in seq(N)){
   #  npath = generate_path(S_0+dS,r_f,vol,dt,T);
   #  ncallpayoff_k[k]=max(npath$values[length(npath$values)]-K,0);  
@@ -127,18 +127,18 @@ test02 <- function (){
 }
 
 test03 <- function(){
-
+  
   S_0=100;
   vol=0.4;
   dt=.01;
   T=1;
-  K=100;
+  K=10;
   r_f=.05;
-
+  
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
-    
+  
   #path = generate_path(S_0,r_f,vol,dt,T);
   B_values=S_0*(seq(0.01,1.2,.01))
   k=1;
@@ -152,16 +152,19 @@ test03 <- function(){
     bs_k[k]=bs$price;
     k=k+1
   }
-  #par(mfrow=c(1,1));
+  par(mfrow=c(1,1));
   
   plot_ylim=c(min(min(do_k),min(bs_k)),max(max(bs_k),max(do_k)))
-    
-  plot(0,0,main="Derivatives Price",xlab="Barrier", ylab="Derivatives Price", 
+  
+  plot(0,0,main=paste("Derivatives Price(Strike=",K,")"),xlab="Barrier", ylab="Derivatives Price", 
        xlim=c(0,max(B_values)),ylim=plot_ylim);
+  
   cl<-rainbow(2);
   print(do_k)
   lines(B_values,do_k,col=cl[1],lty=1)
   lines(B_values,bs_k,col=cl[2],lty=2) 
+  legend(B_values[1],.3*mean(plot_ylim),c(expression("Down-and-out"),expression("Plain-Vanilla Call")),col=cl, lty=c(1,2));
+  
 }
 
 simul <- function(calculate,optionType){
@@ -231,7 +234,7 @@ simul <- function(calculate,optionType){
       #                   regular_hedged_pos=diff(hp_zerodpmethod$nstocks),
       #                   special_hedged_pos=diff(hp_deltamethod$nstocks),
       #                   tagname="Change in ShortedStocks");
-
+      
       show_comparison (t=hp_deltamethod$t,
                        regular=(hp_zerodpmethod$nstocks),
                        special=(hp_deltamethod$nstocks),
