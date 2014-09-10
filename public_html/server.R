@@ -433,7 +433,7 @@ display<- function(S_0,K,B,r_f,vol,at,tc,dt,T,rerun,calculate,minsz,maxdelta,opt
                                       pricerFunc=pricer_func,pricerArgs=pricer_args,
                                       minTradesize=minsz,maxTradedelta=maxdelta);
       
-      par(mfrow=c(3,2));
+      par(mfrow=c(2,3));
       
       plot(path$t,main="Stock Price", xlab="Time",ylab='Stock Price',path$values,type='l')
       plot(path$t,main="Derivative Price", xlab="Time",ylab='Derivative Price',bs$price,type='l')
