@@ -8,7 +8,6 @@ value_downandout_func <- function(S,K,B){
   }
 }
 
-
 value_downandout <- function (npaths,S_0,K,B,r_f,vol,dt,T) {
   
   res=array(0);
@@ -38,7 +37,8 @@ value_downandout_exp <- function(S_0,t,pricerArgs) {
   cbsi=bscallprice(S_0=(B*B/S_0),t=t,pricerArgs=pricerArgs);
   n1=cbs$price;
   n2=((S_0/B)^(1-(2*r_f/(vol*vol)))*cbsi$price)
-  return(n1-n2);
+  nr=(n1-n2);
+  return(nr*((sign(nr)+1)/2))
   #ts.plot(S_0,ts((S_0[1]^2)/S_0)) # <-- beauty
   
 }

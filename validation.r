@@ -66,14 +66,15 @@ test01 <- function(){
 }
 
 test02 <- function (){
+
   S_0=100;
   r_f=.05;
   vol=0.4;
-  dt=.001;
+  dt=.05;
   K=100;
   T=1;
   
-  N<-1000000
+  N<-500000
   
   callpayoff_k=array();
   putpayoff_k=array();
@@ -87,11 +88,11 @@ test02 <- function (){
     putpayoff_k[k]=max(K-path$values[length(path$values)],0);    
   }
 
-  for ( k in seq(N)){
-    npath = generate_path(S_0+dS,r_f,vol,dt,T);
-    ncallpayoff_k[k]=max(npath$values[length(npath$values)]-K,0);  
-    nputpayoff_k[k]=max(K-npath$values[length(npath$values)],0);
-  }
+  #for ( k in seq(N)){
+  #  npath = generate_path(S_0+dS,r_f,vol,dt,T);
+  #  ncallpayoff_k[k]=max(npath$values[length(npath$values)]-K,0);  
+  #  nputpayoff_k[k]=max(K-npath$values[length(npath$values)],0);
+  #}
   
   par(mfrow=c(1,2));
   
@@ -101,13 +102,13 @@ test02 <- function (){
   print(paste("sd(callpayoff_k)=",sd(callpayoff_k)))
   
   print(paste("Monte-Carlo call-option price =",mean(callpayoff_k)*exp(-r_f*T)));
-  print(paste("Monte-Carlo ncall-option price =",mean(ncallpayoff_k)*exp(-r_f*T)));
+  #print(paste("Monte-Carlo ncall-option price =",mean(ncallpayoff_k)*exp(-r_f*T)));
   
-  print(paste("Monte-Carlo call-option delta =",(((mean(ncallpayoff_k)-mean(callpayoff_k))/dS)*exp(-r_f*T))));  
+  #print(paste("Monte-Carlo call-option delta =",(((mean(ncallpayoff_k)-mean(callpayoff_k))/dS)*exp(-r_f*T))));  
   
   print(paste("Monte-Carlo put-option price =",mean(putpayoff_k)*exp(-r_f*T)));
-  print(paste("Monte-Carlo nput-option price =",mean(nputpayoff_k)*exp(-r_f*T)));
-  print(paste("Monte-Carlo put-option delta =",(((mean(nputpayoff_k)-mean(putpayoff_k))/dS)*exp(-r_f*T))));
+  #print(paste("Monte-Carlo nput-option price =",mean(nputpayoff_k)*exp(-r_f*T)));
+  #print(paste("Monte-Carlo put-option delta =",(((mean(nputpayoff_k)-mean(putpayoff_k))/dS)*exp(-r_f*T))));
   
   nh=T/dt;
   
@@ -118,11 +119,49 @@ test02 <- function (){
   bs=bscallprice(S_0=path$values,t=path$t,pricer_args);
   
   print(paste("theoretical BS CallOption price =",bs$price[1]));  
-  print(paste("theoretical BS CallOption delta =",bs$delta[1]));  
+  #print(paste("theoretical BS CallOption delta =",bs$delta[1]));  
   
   print(paste("theoretical BS PutOption price =",bs$price[1]+K*exp(-r_f*T)-path$values[1]));
-  print(paste("theoretical BS PutOption delta =",bs$delta[1]-1));
+  #print(paste("theoretical BS PutOption delta =",bs$delta[1]-1));
   
+}
+
+test03 <- function(){
+
+  S_0=100;
+  vol=0.4;
+  dt=.01;
+  T=1;
+  K=100;
+  r_f=.05;
+
+  nh=T/dt;
+  vec_r_f=rep(r_f,nh)
+  vec_vol=rep(vol,nh)
+    
+  #path = generate_path(S_0,r_f,vol,dt,T);
+  B_values=S_0*(seq(0.01,1.2,.01))
+  k=1;
+  do_k=array();
+  bs_k=array();
+  for (b in B_values){
+    pricer_args = data.frame(r_f=r_f,vol=vol,dt=dt,T=T,K=K,B=b,tol=.001)
+    doprice=downandout_callprice(S_0=S_0,t=0,pricer_args);
+    do_k[k]=((doprice$price))
+    bs=bscallprice(S_0=S_0,t=0,pricer_args);
+    bs_k[k]=bs$price;
+    k=k+1
+  }
+  #par(mfrow=c(1,1));
+  
+  plot_ylim=c(min(min(do_k),min(bs_k)),max(max(bs_k),max(do_k)))
+    
+  plot(0,0,main="Derivatives Price",xlab="Barrier", ylab="Derivatives Price", 
+       xlim=c(0,max(B_values)),ylim=plot_ylim);
+  cl<-rainbow(2);
+  print(do_k)
+  lines(B_values,do_k,col=cl[1],lty=1)
+  lines(B_values,bs_k,col=cl[2],lty=2) 
 }
 
 simul <- function(calculate,optionType){

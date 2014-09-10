@@ -24,12 +24,12 @@ Test01:
 Test02:
 -          Verify that the simulated option value is equal to the value of the same option using the Black-Scholes formula, for both call and put.
 -          Verify that the simulated option delta is equal to the delta of the same option using the Black-Scholes formula, for both call and put.
--          Verify that the simulated option value for path-independent options (such as call and put) are independent of the discretization over time.
+-          Verify that the simulated option value for path-independent options (such as call and put) are independent of the discretization over time (pending)
 
 
 Test03:
--          For barrier and touch options with path-dependent barriers ensure that continuity correction is in place.
--          For barrier options take the example of a down-and-out call with the barrier below strike and an up and out call with the barrier above strike.
+-          For barrier and touch options with path-dependent barriers ensure that continuity correction is in place (pending)
+-          For barrier options take the example of a down-and-out call with the barrier below strike and an up and out call with the barrier above strike (not done)
 -          Verify that for barrier options value and delta are equal to the Black-Scholes closed form solution.
 -          Verify with graphical visualization that the value of the barrier option converges monotone to the value of the corresponding vanilla option as the barrier moves far away
 -          Verify that the variance of the hedge error decreases as the time steps increase
