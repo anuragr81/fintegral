@@ -391,7 +391,35 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-maxDelta=10 (Result: No tracking of delta by position-method)
+maxDelta=10 (Result: No tracking of delta by position-method) - 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+EuropeanCall
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(S_{0}=K=100,dt=.01,T=1,\sigma=.1)$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -424,7 +452,35 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-maxDelta=1 (lazy tracking of delta by position-method)
+maxDelta=1 (lazy tracking of delta by position-method) - 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+EuropeanCall
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(S_{0}=K=100,dt=.01,T=1,\sigma=.1)$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -461,7 +517,35 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-maxdelta=.05 (active tracking of delta by position-method)
+maxdelta=.05 (active tracking of delta by position-method) - E
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+uropeanCall
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(S_{0}=K=100,dt=.01,T=1,\sigma=.1)$
+\end_inset
+
+
 \end_layout
 
 \end_inset

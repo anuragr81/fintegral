@@ -72,3 +72,18 @@ test04_tc <- function(filename,vec_tc){
   }
   write.csv(out,file=filename);
 }
+
+
+test04_sz <- function(filename,vec_sz){
+  
+  filename=(paste("./",filename,sep=""));
+  out= data.frame(vol=0,tc=0,at=0,  mean_dmk=0,  mean_zpk=0,      sd_zpk=0,   sd_dmk=0);
+  for (minsz in vec_sz){
+    dat=simul(calculate=1,optionType=1,vol=.1,at=0,tc=0,minsz=minsz,npaths=200000,dt=.01);
+    out= data.frame(vol=c(out$vol,dat$vol),at=c(out$at,dat$at),tc=c(out$tc,dat$tc),  
+                    mean_dmk=c(out$mean_dmk,dat$mean_dmk),  
+                    mean_zpk=c(out$mean_zpk,dat$mean_zpk),      
+                    sd_zpk=c(out$sd_zpk,dat$sd_zpk),   sd_dmk=c(out$sd_dmk,dat$sd_dmk))
+  }
+  write.csv(out,file=filename);
+}

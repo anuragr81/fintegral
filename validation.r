@@ -169,7 +169,7 @@ test03 <- function(){
   
 }
 
-simul <- function(calculate,optionType,vol,at,tc,npaths,dt){
+simul <- function(calculate,optionType,vol,at,tc,npaths,dt,minsz){
   
   npaths=npaths;
   S_0=100;
@@ -182,7 +182,8 @@ simul <- function(calculate,optionType,vol,at,tc,npaths,dt){
   tc=tc;
   at=at;
   B=99;
-  minsz=.0000001;
+#  minsz=.0000001;
+  minsz=minsz;
   maxdelta=100
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
