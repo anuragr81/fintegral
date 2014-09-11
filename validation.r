@@ -169,24 +169,27 @@ test03 <- function(){
   
 }
 
-simul <- function(calculate,optionType,vol){
+simul <- function(calculate,optionType,vol,at,npaths,dt){
   
+  npaths=npaths;
   S_0=100;
   #vol=0.4;
   vol=vol;
-  dt=.01;
+  dt=dt;
   T=1;
   K=100;
   r_f=.05;
   tc=0;
-  at=0;
+  at=at;
   B=99;
   minsz=.0000001;
   maxdelta=100
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
-  
+#  vec_vol=vol*(1+3*(seq(0,1-dt,dt)))
+  print(vec_vol)
+
   if(maxdelta<0){
     stop("maxTradedelta must be positive.");
   }
@@ -203,7 +206,7 @@ simul <- function(calculate,optionType,vol){
   
   if (calculate==0){
     # could be replaced with an IR model
-    path = generate_path(S_0,r_f,vol,dt,T);
+    path = generate_path(S_0,r_f,vec_vol[1:length(vec_vol)-1],dt,T);
     bs=pricer_func(S_0=path$values,t=path$t,pricer_args);
     
     #    print("<<<<<<<<<<<<<<DELTA>>>>>>>>>>>>>>>>>")
@@ -256,9 +259,9 @@ simul <- function(calculate,optionType,vol){
     sd_zpk=array();
     mean_zpk=array();
     
-    for ( k in seq(100000)){
+    for ( k in seq(npaths)){
       
-      path = generate_path(S_0,r_f,vol,dt,T);
+      path = generate_path(S_0,r_f,vec_vol[1:length(vec_vol)-1],dt,T);
       
       hp_deltamethod=hedged_position(stepFunc=num_stocks_to_short_deltas,checkArgs=check_args,
                                      path_t=path$t,path_values=path$values,
@@ -291,7 +294,7 @@ simul <- function(calculate,optionType,vol){
     hist(mean_zpk,main="Average Position (Alternate-Method)")
     hist(sd_dmk,main="Position Stdev (Delta-Method)")
     hist(sd_zpk,main="Position Stdev (Alternate-Method)")
-    return(data.frame(vol=vol,sd_zpk=mean(sd_zpk),sd_dmk=mean(sd_dmk)))
+    return(data.frame(vol=vol,at=at,mean_dmk=mean(mean_dmk),mean_zpk=mean(mean_zpk),sd_zpk=mean(sd_zpk),sd_dmk=mean(sd_dmk)))
   }
 }
 

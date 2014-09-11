@@ -604,14 +604,14 @@ If
 \end_inset
 
 , we have 
-\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}-c)x+(\delta_{0}-n)\Delta S=0$
+\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}-c)x+(\Delta P-n\Delta S)=0$
 \end_inset
 
  and 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $x=\frac{{(S_{t}-n\alpha+c)\pm\sqrt{(S_{t}-n\alpha+c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha+c)\pm\sqrt{(S_{t}-n\alpha+c)^{2}-4\alpha(\Delta P-n\Delta S)}}}{2\alpha}$
 \end_inset
 
 
@@ -624,7 +624,7 @@ If
 \end_inset
 
  we have 
-\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}+c)x+(\delta_{0}-n)\Delta S=0$
+\begin_inset Formula $\alpha x^{2}+(n\alpha-S_{t}+c)x+(\Delta P-n\Delta S)=0$
 \end_inset
 
  and
@@ -655,7 +655,7 @@ If
 \uwave off
 \noun off
 \color none
-\begin_inset Formula $x=\frac{{(S_{t}-n\alpha-c)\pm\sqrt{(S_{t}-n\alpha-c)^{2}-4\alpha(\delta_{0}-n)\Delta S}}}{2\alpha}$
+\begin_inset Formula $x=\frac{{(S_{t}-n\alpha-c)\pm\sqrt{(S_{t}-n\alpha-c)^{2}-4\alpha(\Delta P-n\Delta S)}}}{2\alpha}$
 \end_inset
 
 

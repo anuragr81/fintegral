@@ -24,7 +24,7 @@ hedged_position <- function (path_t,path_values,
   bs=pricerFunc(S_0=path_values,t=path_t,pricerArgs);
   nShortedStocks = bs$delta[1];
   nstocks[1]=nShortedStocks;
-  hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,at=at,tc=tc)
+  hedged_pos[1] =  pnl_value(S_t=path_values[1],P_t=bs$price[1],nShorted=nShortedStocks,ntraded=0,at=at,tc=tc)
   
   if (isPrint){
     print(paste("hedged_pos[1]=",hedged_pos[1]));
@@ -54,7 +54,7 @@ hedged_position <- function (path_t,path_values,
     zp_delta=bs$delta[i]-nShortedStocks; # nShortedStocks is the current effective delta (for all methods )
     
     if (abs(nShort)<minTradesize  ) {
-      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc)
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,ntraded=nShort,at=at,tc=tc)
       nstocks[i]=nShortedStocks;
       display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
       next;
@@ -64,7 +64,7 @@ hedged_position <- function (path_t,path_values,
       # we short only maxTradeDelta
 #      print("zp_delta>maxTradedelta")
       nShortedStocks=nShortedStocks+maxTradedelta;
-      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,ntraded=nShort,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
       display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
       next;
@@ -74,14 +74,14 @@ hedged_position <- function (path_t,path_values,
       # we short only -maxTradedelta
 #      print("zp_delta<maxTradedelta")
       nShortedStocks=nShortedStocks-maxTradedelta;
-      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+      hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,ntraded=nShort,at=at,tc=tc);
       nstocks[i]=nShortedStocks;
       display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
       next;
     } 
     
     nShortedStocks = nShortedStocks + nShort;
-    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,at=at,tc=tc);
+    hedged_pos[i] = pnl_value(S_t=path_values[i],P_t=bs$price[i],nShorted=nShortedStocks,ntraded=nShort,at=at,tc=tc);
     nstocks[i]=nShortedStocks;
     display_position(isPrint=isPrint,nShort=nShort,nShortedStocks=nShortedStocks,bsprice=bs$price[i],pos=hedged_pos[i]);
     
@@ -221,6 +221,6 @@ num_stocks_to_short_deltas <- function(underlying_price,amivest,tc,delta,nxtdelt
   return(nxtdelta-delta);
 }
 
-pnl_value <- function(S_t,P_t,nShorted,at,tc) {
-  return (P_t-nShorted*(S_t-nShorted*at)-abs(nShorted)*tc);
+pnl_value <- function(S_t,P_t,nShorted,ntraded,at,tc) {
+  return (P_t-nShorted*(S_t-ntraded*at)-abs(ntraded)*tc);
 }

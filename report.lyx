@@ -61,10 +61,139 @@
 \begin_body
 
 \begin_layout Section
-Test 01
+A summary of the Position-based method
+\end_layout
+
+\begin_layout Standard
+Instead of maintaining the number of stock as delta of the derivative, the
+ position based-method maintains the number of stocks in a way that doesn't
+ change the initial position.
+ Implemented as such, this would let the delta of the hedge-portfolio deviate
+ a lot from the delta of the derivative.
+ Therefore, the current implementation allows a control on this deviation
+ at every time-step.
+ This is called 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ in the algorithm.
+ It implies the maximum deviation from derivative-delta allowed at the current
+ time-step.
+ For example, if 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ is set as 0.1, the delta of the derivative at time 
+\begin_inset Formula $t$
+\end_inset
+
+ is 0.4, the current number of stocks is .45 and the number of stocks required
+ to maintain the same position is 0.8, then the algorithm would only allow
+ you to maintain 0.55 (=.45+.1) stocks.
+ 
+\end_layout
+
+\begin_layout Standard
+To aggressively maintain the zero-position, therefore, one needs to choose
+ a high-value for 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+.
+ The following tests were performed with an exceedingly high value of 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ unless otherwise stated.
+\end_layout
+
+\begin_layout Section
+Tests List
 \end_layout
 
 \begin_layout Subsection
+Test01
+\end_layout
+
+\begin_layout Enumerate
+Verify that the mean of the final spot price is equal to the forward
+\end_layout
+
+\begin_layout Enumerate
+Verify that the variance of log spot final is equal to volatility squared
+ x time to maturity (X) - Visually inspect 20 spot price paths (X) - Verify
+ that all spot prices are non-negative
+\end_layout
+
+\begin_layout Subsection
+Test02
+\end_layout
+
+\begin_layout Enumerate
+Verify that the simulated option value is equal to the value of the same
+ option using the Black-Scholes formula, for both call and put.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Verify that the simulated option delta is equal to the delta of the same
+ option using the Black-Scholes formula, for both call and put.
+\end_layout
+
+\begin_layout Enumerate
+Verify that the simulated option value for path-independent options (such
+ as call and put) are independent of the discretization over time 
+\end_layout
+
+\begin_layout Subsection
+Test03: 
+\end_layout
+
+\begin_layout Enumerate
+For barrier and touch options with path-dependent barriers ensure that continuit
+y correction is in place
+\end_layout
+
+\begin_layout Enumerate
+For barrier options take the example of a down-and-out call with the barrier
+ below strike and an up and out call with the barrier above strike
+\end_layout
+
+\begin_layout Enumerate
+Verify that for barrier options value and delta are equal to the Black-Scholes
+ closed form solution 
+\end_layout
+
+\begin_layout Enumerate
+Verify with graphical visualization that the value of the barrier option
+ converges monotone to the value of the corresponding vanilla option as
+ the barrier moves far away
+\end_layout
+
+\begin_layout Subsection
+Test04
+\end_layout
+
+\begin_layout Enumerate
+Verify that the variance of the hedge error decreases as the time steps
+ increase 
+\end_layout
+
+\begin_layout Enumerate
+Test the impact of the hedge error by increasing the volatility (e.g.
+ linearly) over the time to maturity (pending).
+ 
+\end_layout
+
+\begin_layout Section
+Test Results
+\end_layout
+
+\begin_layout Subsection
+Test 01
+\end_layout
+
+\begin_layout Subsubsection
 Lognormal Distribution Tests
 \end_layout
 
@@ -102,7 +231,7 @@ and
 \begin_layout Standard
 \begin_inset Graphics
 	filename test01.png
-	scale 80
+	scale 60
 
 \end_inset
 
@@ -134,7 +263,7 @@ After running 500K runs (no antithetic technique employed), the values obtained
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Visual Inspection
 \end_layout
 
@@ -142,11 +271,11 @@ Visual Inspection
 The stock-prices were all positive.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Test 02
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Comparison of MonteCarlo Prices/Deltas with Theoretical values
 \end_layout
 
@@ -173,7 +302,7 @@ for put.
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Effect of number of intervals on path-independent options
 \end_layout
 
@@ -210,7 +339,7 @@ Widening the interval of simulatons
 [1] "theoretical BS PutOption price = 13.1458939002881"
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Test 03
 \end_layout
 
@@ -229,18 +358,23 @@ Notice that the price of a down-and-out barrier option does converge to
 \begin_layout Standard
 \begin_inset Graphics
 	filename test03.png
+	scale 40
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Test 04
 \end_layout
 
+\begin_layout Subsubsection
+Hedege Error Variance with respect to number of steps
+\end_layout
+
 \begin_layout Standard
-The hedge-error variance increases with decreasing the number of steps.
+Decreasing the number of steps increases the variance of the hedge-error.
 \end_layout
 
 \begin_layout Standard
@@ -264,7 +398,7 @@ dt
 \begin_inset Text
 
 \begin_layout Plain Layout
-stdev
+HedgeError stdev delta-neutral method
 \end_layout
 
 \end_inset
@@ -345,6 +479,475 @@ stdev
 
 \begin_layout Plain Layout
 17.92091
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Hedege Error Variance with respect to volatility
+\end_layout
+
+\begin_layout Standard
+The hedge-error variance increases with increasing volatility stays ~17
+ after 40%.
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+volatility
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HedgeError stdev position-based method 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HedgeError stdev delta-neutral method
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.03
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7.10E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5.278396
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.36E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16.26455
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6.67E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17.19899
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.75E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17.65691
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.73E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17.82638
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.45E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17.74986679
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.09E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16.75138469
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Hedege Error Variance with linearly increasing volatility
+\end_layout
+
+\begin_layout Standard
+Volatility was increasing for 10% to 40%.
+ The comparison of PNL mean and error variance shows that linear volatility
+ doesn't affect the average PNL for position-based method as much as it
+ affects the delta-neutral method.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mean PNL delta-neutral method
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mean PNL position-based method
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Const Vol=10%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-67.17022
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-64.07907
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vol=10% to 40%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-52.23493
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-64.07907
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HedgeError delta-neutral method
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HedgeError stdev position-based method
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Const Vol=10%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.57E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16.29466
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vol=10%-40%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.19E-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17.78912
 \end_layout
 
 \end_inset
