@@ -52,7 +52,8 @@ Impact of stochastic volatility
 
 1. at
 2. dt
-3. maxdelta (what it means)
+3. maxdelta - .05,.1,100
+4. size -
 
  
 On the simulation tool on the web: label axes so one can see which graph shows which result.

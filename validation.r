@@ -163,9 +163,9 @@ test03 <- function(){
   lines(B_values,bs_k,col=cl[2],lty=2) 
   legend(B_values[1],.3*mean(plot_ylim),c(expression("Down-and-out"),expression("Plain-Vanilla Call")),col=cl, lty=c(1,2));
   
-#  filename=("file://c:/local_files/anurag/model_validation/liquidity_task/PvsB.csv");
-#  dat=(data.frame(B=B_values,P=do_k))
-#  write.csv(dat,file=filename);
+  filename=("file://c:/local_files/anurag/model_validation/liquidity_task/PvsB.csv");
+  dat=(data.frame(B=B_values,P=do_k))
+  write.csv(dat,file=filename);
   
 }
 
@@ -187,9 +187,9 @@ simul <- function(calculate,optionType,vol,at,npaths,dt){
   nh=T/dt;
   vec_r_f=rep(r_f,nh)
   vec_vol=rep(vol,nh)
-#  vec_vol=vol*(1+3*(seq(0,1-dt,dt)))
+  #  vec_vol=vol*(1+3*(seq(0,1-dt,dt)))
   print(vec_vol)
-
+  
   if(maxdelta<0){
     stop("maxTradedelta must be positive.");
   }
@@ -289,7 +289,7 @@ simul <- function(calculate,optionType,vol,at,npaths,dt){
     #sink();
     #print(out);
     par(mfrow=c(2,2));
-#    print(paste("Mean-dmk:",mean(mean_dmk)))
+    #    print(paste("Mean-dmk:",mean(mean_dmk)))
     hist(mean_dmk,main="Average Position (Delta-Method)")
     hist(mean_zpk,main="Average Position (Alternate-Method)")
     hist(sd_dmk,main="Position Stdev (Delta-Method)")

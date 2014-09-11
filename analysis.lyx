@@ -1,0 +1,486 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Algorithm Details
+\end_layout
+
+\begin_layout Subsection
+Size limit
+\end_layout
+
+\begin_layout Standard
+The size limit 
+\begin_inset Formula $minTradeSize$
+\end_inset
+
+ is imposed as the minimum number of trades that can be done at every time-step
+ with either the delta-method or the position-based method.
+ When using delta-method the (fractional) volume of trades to be done at
+ time 
+\begin_inset Formula $t$
+\end_inset
+
+ is always 
+\begin_inset Formula $\delta_{1}-\delta_{0}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $minTradeSize$
+\end_inset
+
+ is set at 
+\begin_inset Formula $m$
+\end_inset
+
+, and delta changes from 
+\begin_inset Formula $\delta_{0}$
+\end_inset
+
+to 
+\begin_inset Formula $\delta_{1}$
+\end_inset
+
+at time 
+\begin_inset Formula $t$
+\end_inset
+
+, then a trade would be made only if its size :
+\begin_inset Formula $|\delta_{1}-\delta_{0}|>m$
+\end_inset
+
+.
+ When using the position-based method, similarly, when the number of stocks
+ is 
+\begin_inset Formula $n$
+\end_inset
+
+ and the number of stocks required to maintain the position value same is
+ 
+\begin_inset Formula $n_{p}$
+\end_inset
+
+ (s.t.
+ 
+\begin_inset Formula $P_{0}-nS_{0}=P_{1}-n_{p}S_{1})$
+\end_inset
+
+, then a trade is possible only if 
+\begin_inset Formula $|n_{p}-n|>m$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Here is the example for effect of trade-size with both of these methods.
+ 
+\end_layout
+
+\begin_layout Standard
+When the minTradeSize is increased, the jump in deltas have to larger for
+ the trade to occur.
+ The tracking of the PNL for the position-based method definitely worsens
+ because of the higher value of minTradeSize.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lowminsize.png
+	scale 65
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+MinTradeSize =
+\begin_inset Formula $10^{-7}$
+\end_inset
+
+- 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+EuropeanCall
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(S_{0}=K=100,dt=.01,T=1,\sigma=.1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename highminsizept03.png
+	scale 65
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+MinTradeSize=
+\begin_inset Formula $0.03$
+\end_inset
+
+-
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+EuropeanCall
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(S_{0}=K=100,dt=.01,T=1,\sigma=.1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Limits on Delta-Jump Response
+\end_layout
+
+\begin_layout Standard
+There are no delta limits imposed as such.
+ In what is referred in the test results document as the delta-method, the
+ number of stocks is always the same as the delta of the derivative.
+ In the position-based method, the limits can be imposed on how much more
+ or less shorted the position of stocks would be in response to a jump in
+ delta.
+ The inspiration behind this limit is the observed high volatility of the
+ hedge-portfolio value with the delta-method - when delta-jumps are too
+ high (more so in the case of barrier options).
+\end_layout
+
+\begin_layout Standard
+This limit, called 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ is just the number of stocks one can short/buy in order to get close to
+ a suddenly changed delta.
+ Considering a call option, if the current number of stocks is 
+\begin_inset Formula $n$
+\end_inset
+
+ and the delta changes from 
+\begin_inset Formula $\delta_{0}$
+\end_inset
+
+to
+\begin_inset Formula $\delta_{1}$
+\end_inset
+
+, then the delta-method would allow you to trade 
+\begin_inset Formula $\delta_{1}-n$
+\end_inset
+
+ stocks so that your position would be come 
+\begin_inset Formula $P_{1}-\delta_{1}S_{1}$
+\end_inset
+
+.
+ The position-based method on the other hand, doesn't blindly chase 
+\begin_inset Formula $\delta_{1}$
+\end_inset
+
+.
+ It compares 
+\begin_inset Formula $\delta_{1}-n$
+\end_inset
+
+ (the number of stocks required to track the delta) with 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+, and if the difference is too much then it just trades 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ stocks.
+ This implements a somewhat 
+\begin_inset Quotes eld
+\end_inset
+
+lazy
+\begin_inset Quotes erd
+\end_inset
+
+ tracking of delta - with the laziness (or the level of response) controlled
+ with the parameter 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+.
+ If the jump is not too much, then the algorithm just maintains total 
+\begin_inset Formula $n_{p}$
+\end_inset
+
+stocks such that 
+\begin_inset Formula $P_{0}-\delta_{0}S_{0}=P_{1}-n_{p}S_{1}$
+\end_inset
+
+, otherwise it attempts to get close to 
+\begin_inset Formula $\delta_{1}$
+\end_inset
+
+by trading 
+\begin_inset Formula $maxdelta$
+\end_inset
+
+ stocks.
+\end_layout
+
+\begin_layout Standard
+This could also be seen as a quantification of how-much-delta-hedged we
+ want to be.
+ 
+\end_layout
+
+\begin_layout Standard
+This can be demonstrated with the following charts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename highdelta_100.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+maxDelta=10 (Result: No tracking of delta by position-method)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename mediumdelta_pt1.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+maxDelta=1 (lazy tracking of delta by position-method)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Les
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lowdelta_pt05.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+maxdelta=.05 (less lazy tracking of delta by position-method)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Liquidity
+\end_layout
+
+\begin_layout Section
+Transaction Costs
+\end_layout
+
+\end_body
+\end_document
