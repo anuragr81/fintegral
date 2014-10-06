@@ -300,18 +300,28 @@ simul <- function(calculate,optionType,vol,at,tc,npaths,dt,minsz){
 }
 
 testStockGamma <- function(K) {
+  dt=.01;
   ds=.1;
+  vol=.4;
   finS=3*K;
   veclen=as.integer(finS/ds);
   S_0=seq(0,finS,ds); S_0=S_0[1:length(S_0)-1];
   K=rep(K,veclen);
-  #r_f=seq(0,.05,(.05/veclen)); r_f=r_f[1:(length(r_f)-1)];
-  r_f=rep(.05,veclen);
-  vol=rep(.6,veclen);
-  t=rep(0,veclen);
-  T=rep(1,veclen);
-  v=bscallprice(S_0,K,r_f,vol,t,T);
-  plot(S_0,v$gamma); #,S_0,v$delta,S_0,v$gamma);
+  vec_vol=rep(vol,veclen)
+  r_f=.05;
+  vec_r_f=rep(r_f,veclen);
+  #r_f=seq(0,.05,(.05/veclen)); 
+  #r_f=r_f[1:(length(r_f)-1)];
+  #  path = generate_path(S_0,r_f,vec_vol[1:length(vec_vol)-1],dt,T);
+  
+  pricer_args = data.frame(r_f=vec_r_f,vol=vec_vol,T=T,K=K);
+  if (checkargs_bscallpricer(pricer_args)){
+    bs=bscallprice(S_0=S_0,t=0,pricer_args); 
+  }
+  par(mfrow=c(2,1));
+  plot(xlab="StockPrice",ylab="CallPrice",S_0,bs$price,type='l')
+  plot(xlab="StockPrice",ylab="CallDelta",S_0,bs$delta,type='l')
+  
 }
 
 
