@@ -303,13 +303,19 @@ testStockGamma <- function(K) {
   dt=.01;
   ds=.1;
   vol=.4;
-  finS=3*K;
-  veclen=as.integer(finS/ds);
-  S_0=seq(0,finS,ds); S_0=S_0[1:length(S_0)-1];
+  finS=K;
+  veclen=as.integer(finS/ds)-1;
+  
+  #S_0=seq(0,finS,ds); S_0=S_0[1:length(S_0)-1];
+  S_0=rep(finS,finS/ds); S_0=S_0[1:length(S_0)-1];
+  
   K=rep(K,veclen);
-  vec_vol=rep(vol,veclen)
+  #vec_vol=rep(vol,veclen)
+  vec_vol=seq(1,veclen)*vol/14;
+  print(vec_vol)
   r_f=.05;
   vec_r_f=rep(r_f,veclen);
+  #vec_r_f=seq(1,veclen)*r_f/2;
   #r_f=seq(0,.05,(.05/veclen)); 
   #r_f=r_f[1:(length(r_f)-1)];
   #  path = generate_path(S_0,r_f,vec_vol[1:length(vec_vol)-1],dt,T);
@@ -318,9 +324,10 @@ testStockGamma <- function(K) {
   if (checkargs_bscallpricer(pricer_args)){
     bs=bscallprice(S_0=S_0,t=0,pricer_args); 
   }
-  par(mfrow=c(2,1));
-  plot(xlab="StockPrice",ylab="CallPrice",S_0,bs$price,type='l')
-  plot(xlab="StockPrice",ylab="CallDelta",S_0,bs$delta,type='l')
+  par(mfrow=c(2,2));
+  plot(xlab="vol",ylab="CallPrice",vec_vol,bs$price,type='l')
+  plot(xlab="vol",ylab="CallDelta",vec_vol,bs$delta,type='l')
+  plot(xlab="vol",ylab="CallGamma",vec_vol,bs$gamma,type='l')
   
 }
 
@@ -357,8 +364,11 @@ testBSStock <- function() {
   dt=.01;
   T=3;
   K=50;
-  path = generate_path(S_0,r_f,vol,dt,T);
+
+  path = generate_path(npaths=1,S_0=S_0,r_f=r_f,vol=vol,dt=dt,T=T);
+  print(T)
   nh=T/dt;
+
   start=0;
   end=2;
   df=(end-start)/nh;
@@ -382,19 +392,19 @@ testBS <- function(){
   S_0=100
   r_f=.1
   vol=.5
-  dt=.01
-  T=3
-  K=110
+  dt=.01;
+  T=3;
+  K=110;
   path = generate_path(S_0,r_f,vol,dt,T);
-  nh=T/dt
-  start=0
-  end=2
-  df=(end-start)/nh
-  volvec=seq(start,end-df,df)
+  nh=T/dt;
+  start=0;
+  end=2;
+  df=(end-start)/nh;
+  volvec=seq(start,end-df,df);
   bs = bscallprice(S_0=rep(S_0,nh),K=rep(K,nh),r_f=rep(r_f,nh),vol=rep(vol,nh),t=path$t,T=rep(T,nh));
   plot(0,0,xlab="Time", ylab="", xlim=c(0,max(path$t)),ylim=c(-max(bs$price/K,1),max(bs$price/K,1)));
   cl<-rainbow(2);
-  lines(path$t,bs$delta,col=cl[1],lty=1)
+  lines(path$t,bs$delta,col=cl[1],lty=1);
   lines(path$t,bs$price/K,col=cl[2],lty=2);
   legend(1,-0.5,c(expression("delta"),expression("price/strike")),col=cl, lty=c(1,2)); 
 }

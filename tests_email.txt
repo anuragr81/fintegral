@@ -50,11 +50,9 @@ All impacts should show at least the mean and variance of the hedge error (simul
 
 Impact of stochastic volatility
 
-1. at
-2. dt
-3. maxdelta - .05,.1,100 (postponed)
-4. size -
+1. dt
+2. maxdelta - .05,.1,100 (pending - even though it is obvious)
+4. size
 
 On the simulation tool on the web: label axes so one can see which graph shows which result.
  
-
